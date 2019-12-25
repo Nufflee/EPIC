@@ -5,6 +5,7 @@
 #include "serial_port.h"
 #include "io.h"
 #include "terminal.h"
+#include "gdt.h"
 
 /*
  * 1. Keyboard input
@@ -54,6 +55,8 @@ void kernel_main()
 
   printf("Hello, world!\n");
   serial_port_printf(COM1, "Hello, world!\n");
+
+  gdt_install();
 
   keyboard_start_polling();
 }
