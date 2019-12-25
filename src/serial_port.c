@@ -1,0 +1,41 @@
+#include <string.h>
+#include "serial_port.h"
+#include "io.h"
+
+void serial_port_init(com_port port)
+{
+  out8(port + 1, 0x00); // Disable all interrupts
+  out8(port + 3, 0x80); // Enable DLAB (baud rate divisor)
+  out8(port + 0, 0x03); // Set low byte of baud rate divisor to 3 (38400 baud)
+  out8(port + 1, 0x00); // Set high byte of baud rate divisor to 0
+  out8(port + 3, 0x03); // 8 bits, no parity, one stop bit
+  out8(port + 2, 0xC7); // Enable FIFO, clear it, 14-byte threshold
+  out8(port + 4, 0x0B); // Enabled interrupt, set RTS/DSR
+}
+
+size_t serial_port_printf(com_port port, char *string)
+{
+  size_t length = strlen(string);
+
+  for (size_t i = 0; i < length; i++)
+  {
+    serial_port_putchar(port, string[i]);
+  }
+
+  return length;
+}
+
+static int serial_port_is_tx_buffer_empty(com_port port)
+{
+  return in8(port + 5) & 0x20;
+}
+
+void serial_port_putchar(com_port port, char c)
+{
+  // Wait until we can send
+  while (!serial_port_is_tx_buffer_empty(port))
+  {
+  }
+
+  out8(port, c);
+}
