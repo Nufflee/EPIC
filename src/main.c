@@ -26,8 +26,6 @@ void kernel_main()
   gdt_install();
   idt_install();
 
-  asm volatile("int $0x3");
-
   while (1)
     ;
   //keyboard_start_polling();

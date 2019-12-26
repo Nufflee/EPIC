@@ -5,6 +5,8 @@
 static idt_entry idt[256];
 static idt_ptr ip;
 
+#define MAKE_IDT_ENTRY(x) idt_set_entry(x, (u32)isr##x, 0x08, 0x8E)
+
 static void idt_set_entry(u8 number, u32 base, u16 segment_selector, u8 flags)
 {
   idt[number].jump_to_low = base & 0xFFFF;
@@ -22,7 +24,39 @@ void idt_install()
 
   memset(&idt, 0, sizeof(idt_entry) * 256);
 
-  idt_set_entry(0x3, (u32)isr3, 0x08, 0x8E);
+  MAKE_IDT_ENTRY(1);
+  MAKE_IDT_ENTRY(2);
+  MAKE_IDT_ENTRY(3);
+  MAKE_IDT_ENTRY(4);
+  MAKE_IDT_ENTRY(5);
+  MAKE_IDT_ENTRY(6);
+  MAKE_IDT_ENTRY(7);
+  MAKE_IDT_ENTRY(8);
+  MAKE_IDT_ENTRY(9);
+  MAKE_IDT_ENTRY(10);
+  MAKE_IDT_ENTRY(11);
+  MAKE_IDT_ENTRY(12);
+  MAKE_IDT_ENTRY(13);
+  MAKE_IDT_ENTRY(14);
+  MAKE_IDT_ENTRY(15);
+  MAKE_IDT_ENTRY(16);
+  MAKE_IDT_ENTRY(17);
+  MAKE_IDT_ENTRY(18);
+  MAKE_IDT_ENTRY(19);
+  MAKE_IDT_ENTRY(20);
+  MAKE_IDT_ENTRY(21);
+  MAKE_IDT_ENTRY(22);
+  MAKE_IDT_ENTRY(23);
+  MAKE_IDT_ENTRY(24);
+  MAKE_IDT_ENTRY(25);
+  MAKE_IDT_ENTRY(26);
+  MAKE_IDT_ENTRY(27);
+  MAKE_IDT_ENTRY(28);
+  MAKE_IDT_ENTRY(29);
+  MAKE_IDT_ENTRY(30);
+  MAKE_IDT_ENTRY(31);
+
+  idt_set_entry(0x21, (u32)isr0x21, 0x08, 0x8E);
 
   idt_flush((u32)&ip);
 }
