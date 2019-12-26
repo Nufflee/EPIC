@@ -17,10 +17,7 @@ size_t serial_port_printf(com_port port, char *string)
 {
   size_t length = strlen(string);
 
-  for (size_t i = 0; i < length; i++)
-  {
-    serial_port_putchar(port, string[i]);
-  }
+  for (size_t i = 0; i < length; i++) serial_port_putchar(port, string[i]);
 
   return length;
 }
@@ -33,9 +30,7 @@ static int serial_port_is_tx_buffer_empty(com_port port)
 void serial_port_putchar(com_port port, char c)
 {
   // Wait until we can send
-  while (!serial_port_is_tx_buffer_empty(port))
-  {
-  }
+  while (!serial_port_is_tx_buffer_empty(port));
 
   out8(port, c);
 }

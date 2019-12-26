@@ -6,17 +6,6 @@ static u16 width = 80;
 static u16 height = 25;
 static u16 x, y;
 
-void terminal_clear()
-{
-  for (u16 x = 0; x < width; x++)
-  {
-    for (u16 y = 0; y < height; y++)
-    {
-      display_buffer[y * width + x] = 0;
-    }
-  }
-}
-
 void terminal_putchar(char c)
 {
   if (c == '\n')
@@ -36,6 +25,16 @@ void terminal_putchar(char c)
     y++;
     x = 0;
   }
-
   // TODO: y-overflow - scrolling
+}
+
+void terminal_clear()
+{
+  for (u16 x = 0; x < width; x++)
+  {
+    for (u16 y = 0; y < height; y++)
+    {
+      display_buffer[y * width + x] = 0;
+    }
+  }
 }
