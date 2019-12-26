@@ -7,12 +7,7 @@
 #include "terminal.h"
 #include "gdt.h"
 #include "idt.h"
-
-/*
- * 1. Keyboard input
- * 2. Clean up code
- * 3. Serial port
- */
+#include "pic.h"
 
 void kernel_main()
 {
@@ -22,6 +17,8 @@ void kernel_main()
 
   printf("Hello, world!\n");
   serial_port_printf(COM1, "Hello, world!\n");
+
+  program_pics();
 
   gdt_install();
   idt_install();
