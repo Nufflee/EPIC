@@ -13,3 +13,13 @@ size_t strlen(char *string)
 
   return len;
 }
+
+void *memset(void *buffer, int value, size_t length)
+{
+  u8 *dest = buffer;
+
+  while (length--)
+    *dest++ = (u8)value;
+
+  return dest;
+}

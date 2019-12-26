@@ -1,6 +1,6 @@
-CC				 := i686-linux-gnu-gcc
+CC				 := i686-linux-gnu-gcc-8
 AS				 := i686-linux-gnu-as
-CCFLAGS		 := -g -ffreestanding -Wall -Wextra -Werror -Isrc -lgcc -nostartfiles
+CCFLAGS		 := -g -ffreestanding -Wall -Wextra -Werror -Isrc -lgcc -nostartfiles -fno-pie
 LDFLAGS	   := -g -ffreestanding -nostdlib -nostartfiles
 
 BUILDDIR	 := build
