@@ -3,6 +3,7 @@
 #include "serial_port.h"
 #include "terminal.h"
 #include "printf.h"
+#include "interrupt.h"
 
 // Some code yoinked from https://github.com/levex/osdev/blob/master/drivers/keyboard.c
 
@@ -11,20 +12,41 @@ static char *asdfghjkl = "asdfghjkl";
 static char *yxcvbnm = "yxcvbnm";
 static char *numbers = "123456789";
 
+static void keyboard_interrupt_handler();
+static u8 scancode_to_ascii(u8 code);
+
 void keyboard_init()
 {
+  set_interrupt_callback(KEYBOARD_INTERUPT, keyboard_interrupt_handler);
+}
+
+static void keyboard_interrupt_handler()
+{
+  u8 scan_code = in8(0x60);
+  char c = scancode_to_ascii(scan_code);
+
+  if (c > 0)
+  {
+    char buffer[100];
+
+    sprintf(buffer, "%d", c);
+
+    serial_port_printf(COM1, buffer);
+
+    terminal_putchar(c);
+  }
 }
 
 static u8 scancode_to_ascii(u8 code)
 {
   switch (code)
   {
-  case 0x1C:
+  case ENTER_PRESSED:
     return '\n';
-  case 0x39:
+  case SPACE_PRESSED:
     return ' ';
-  case 0x0E:
-    return '\r';
+  case BACKSPACE_PRESSED:
+    return '\b';
   case POINT_PRESSED:
     return '.';
   case SLASH_RELEASED:
@@ -36,11 +58,11 @@ static u8 scancode_to_ascii(u8 code)
   if (code >= ONE_PRESSED && code <= NINE_PRESSED)
     return numbers[code - ONE_PRESSED];
 
-  if (code >= 0x10 && code <= 0x1C)
+  if (code >= Q_PRESSED && code <= ENTER_PRESSED)
     return qwertzuiop[code - 0x10];
-  else if (code >= 0x1E && code <= 0x26)
+  else if (code >= A_PRESSED && code <= L_PRESSED)
     return asdfghjkl[code - 0x1E];
-  else if (code >= 0x2C && code <= 0x32)
+  else if (code >= Y_PRESSED && code <= M_PRESSED)
     return yxcvbnm[code - 0x2C];
 
   return 0;

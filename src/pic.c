@@ -21,6 +21,10 @@ void program_pics()
   out8(PIC1_DATA, pic1_mask); // restore saved masks.
   out8(PIC2_DATA, pic2_mask);
 
+  // TEMP HACK: Disable all interrupts except keyboard for the time being.
+  out8(PIC1_DATA, 0xfd);
+  out8(PIC2_DATA, 0xff);
+
   asm volatile("sti");
 }
 

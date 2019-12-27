@@ -23,7 +23,8 @@ void kernel_main()
   gdt_install();
   idt_install();
 
+  keyboard_init();
+
   while (1)
     ;
-  //keyboard_start_polling();
 }

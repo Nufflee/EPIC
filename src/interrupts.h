@@ -1,6 +1,6 @@
 #pragma once
 
-#include "irq.h"
+#include "interrupt.h"
 
 __attribute__((naked)) void common_interrupt_stub()
 {
@@ -79,4 +79,4 @@ ISR_NO_ERRORCODE(29)
 ISR_WITH_ERRORCODE(30)
 ISR_NO_ERRORCODE(31)
 
-ISR_NO_ERRORCODE(0x21)
+ISR_NO_ERRORCODE(33)

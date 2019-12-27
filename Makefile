@@ -29,7 +29,7 @@ $(BOOT.O): $(BOOT.S)
 	$(AS) $(BOOT.S) -o $(BOOT.O)
 
 objs:
-	for f in $$(echo "$(SOURCES)" | tr -s " " "\012"); do $(CC) -c $$f -o $$(echo "build/$$(basename $$f | sed "s/.c/.o/g")") $(CCFLAGS) || exit; done;
+	for f in $$(echo "$(SOURCES)" | tr -s " " "\012"); do $(CC) -c $$f -o $$(echo "build/$$(basename $$f | sed "s/\.c/\.o/g")") $(CCFLAGS) || exit; done;
 
 link: $(LINKER.LD)
 	$(CC) -T $(LINKER.LD) -o $(OS.BIN) $(LDFLAGS) $(OBJS)

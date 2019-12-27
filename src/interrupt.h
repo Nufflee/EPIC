@@ -10,8 +10,10 @@ typedef struct register_info
 
 typedef enum interrupt_type
 {
-  PLACEHOLDER_INTERRUPT = 0x0
+  KEYBOARD_INTERUPT = 33
 } interrupt_type;
 
+typedef void (*interrupt_callback)(register_info *);
+
+void set_interrupt_callback(interrupt_type type, interrupt_callback callback);
 void interrupt_handler(register_info *addr);
-void install_interrupt_handler(interrupt_type type, void (*callback)(register_info *));
