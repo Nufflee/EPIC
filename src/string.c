@@ -23,3 +23,16 @@ void *memset(void *buffer, int value, size_t length)
 
   return dest;
 }
+
+void *memcpy(void *destination, void *source, size_t length)
+{
+  char *csrc = (char *)source;
+  char *cdest = (char *)destination;
+
+  for (size_t i = 0; i < length; i++)
+  {
+    cdest[i] = csrc[i];
+  }
+
+  return destination;
+}

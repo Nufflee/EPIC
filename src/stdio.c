@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "terminal.h"
+#include "shell.h"
 #include "printf.h"
 #include "serial_port.h"
 
@@ -22,7 +22,7 @@ int printf(const char *format, ...)
 
   for (int i = 0; i < len; i++)
   {
-    terminal_putchar(buffer[i]);
+    shell_putchar(buffer[i]);
   }
 
   va_end(list);
