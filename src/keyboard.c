@@ -29,7 +29,7 @@ static void keyboard_interrupt_handler()
   {
     char buffer[100];
 
-    sprintf(buffer, "%d", c);
+    sprintf(buffer, "%d\n", c);
 
     serial_port_printf(COM1, buffer);
 

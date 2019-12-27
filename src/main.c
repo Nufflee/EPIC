@@ -11,12 +11,7 @@
 
 void kernel_main()
 {
-  terminal_clear();
-
   serial_port_init(COM1);
-
-  printf("Hello, world!\n");
-  serial_port_printf(COM1, "Hello, world!\n");
 
   program_pics();
 
@@ -24,6 +19,11 @@ void kernel_main()
   idt_install();
 
   keyboard_init();
+
+  terminal_init();
+
+  printf("Hello, world!\n");
+  serial_port_printf(COM1, "Hello, world!\n");
 
   while (1)
     ;
