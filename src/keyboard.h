@@ -1,6 +1,6 @@
 // Some code yoinked from here: https://github.com/levex/osdev/blob/master/drivers/keyboard.c
 
-enum scan_code
+typedef enum scan_code
 {
   NULL_KEY = 0,
   Q_PRESSED = 0x10,
@@ -71,7 +71,16 @@ enum scan_code
   SPACE_RELEASED = 0xB9,
   ENTER_PRESSED = 0x1C,
   ENTER_RELEASED = 0x9C,
-};
+
+  LEFT_ARROW_PRESSED = 0x0E4B,
+  LEFT_ARROW_RELEASED = 0x0ECB,
+  RIGHT_ARROW_PRESSED = 0x0E4D,
+  RIGHT_ARROW_RELEASED = 0x0ECD
+} scan_code;
+
+typedef void (*keyboard_callback)(scan_code code);
 
 void keyboard_init();
 void keyboard_start_polling();
+
+void keyboard_add_key_press_callback(keyboard_callback callback);

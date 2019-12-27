@@ -12,8 +12,13 @@ static char *asdfghjkl = "asdfghjkl";
 static char *yxcvbnm = "yxcvbnm";
 static char *numbers = "123456789";
 
+#define CALLBACK_COUNT 12
+
+static u16 last_scan_code;
+static keyboard_callback key_press_callbacks[CALLBACK_COUNT];
+
 static void keyboard_interrupt_handler();
-static u8 scancode_to_ascii(u8 code);
+static char asciify_scan_code(u8 code);
 
 void keyboard_init()
 {
@@ -22,18 +27,55 @@ void keyboard_init()
 
 static void keyboard_interrupt_handler()
 {
-  u8 scan_code = in8(0x60);
-  char c = scancode_to_ascii(scan_code);
+  u16 scan_code = in8(0x60);
 
-  if (c > 0)
+  if (scan_code != 0xe0)
   {
-    serial_port_printf(COM1, "%d\n", c);
+    if (last_scan_code == 0xE0)
+    {
+      scan_code = 0xE000 | scan_code;
+    }
 
-    terminal_putchar(c);
+    for (int i = 0; i < 12; i++)
+    {
+      keyboard_callback callback = key_press_callbacks[i];
+
+      if (callback)
+      {
+        callback(scan_code);
+      }
+    }
+
+    char c = asciify_scan_code(scan_code);
+
+    serial_port_printf(COM1, "scan code: %d (0x%x)\n", scan_code, scan_code);
+
+    if (c > 0)
+    {
+      serial_port_printf(COM1, "%d\n", c);
+
+      terminal_putchar(c);
+    }
   }
+
+  last_scan_code = scan_code;
 }
 
-static u8 scancode_to_ascii(u8 code)
+void keyboard_add_key_press_callback(keyboard_callback callback)
+{
+  static u8 last_callback_index = 0;
+
+  if (last_callback_index >= 11)
+  {
+    serial_port_printf(COM1, "No more key press callback slots!");
+
+    return;
+  }
+
+  key_press_callbacks[last_callback_index++] = callback;
+}
+
+static char asciify_scan_code(u8 code)
 {
   switch (code)
   {
