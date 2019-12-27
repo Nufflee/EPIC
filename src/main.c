@@ -1,6 +1,5 @@
 #include <stddef.h>
 #include <stdio.h>
-#include "printf.h"
 #include "keyboard.h"
 #include "serial_port.h"
 #include "io.h"

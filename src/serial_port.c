@@ -1,4 +1,6 @@
 #include <string.h>
+#include <stdarg.h>
+#include <stdio.h>
 #include "serial_port.h"
 #include "io.h"
 
@@ -13,14 +15,21 @@ void serial_port_init(com_port port)
   out8(port + 4, 0x0B); // Enabled interrupt, set RTS/DSR
 }
 
-size_t serial_port_printf(com_port port, char *string)
+int serial_port_printf(com_port port, const char *format, ...)
 {
-  size_t length = strlen(string);
+  va_list list;
+  va_start(list, format);
 
-  for (size_t i = 0; i < length; i++)
+  char buffer[BUFFER_LEN];
+
+  int length = vsnprintf(buffer, sizeof(buffer), format, list);
+
+  for (int i = 0; i < length; i++)
   {
-    serial_port_putchar(port, string[i]);
+    serial_port_putchar(port, buffer[i]);
   }
+
+  va_end(list);
 
   return length;
 }

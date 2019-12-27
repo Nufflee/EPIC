@@ -2,7 +2,6 @@
 #include "terminal.h"
 #include "io.h"
 #include "serial_port.h"
-#include "printf.h"
 
 static u16 *display_buffer = (u16 *)0xB8000;
 static u16 x, y;

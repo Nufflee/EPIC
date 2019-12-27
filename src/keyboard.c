@@ -1,8 +1,8 @@
+#include <stdio.h>
 #include "keyboard.h"
 #include "io.h"
 #include "serial_port.h"
 #include "terminal.h"
-#include "printf.h"
 #include "interrupt.h"
 
 // Some code yoinked from https://github.com/levex/osdev/blob/master/drivers/keyboard.c
@@ -27,7 +27,7 @@ static void keyboard_interrupt_handler()
 
   if (c > 0)
   {
-    char buffer[100];
+    char buffer[BUFFER_LEN];
 
     sprintf(buffer, "%d\n", c);
 
@@ -86,7 +86,7 @@ void keyboard_start_polling()
       continue;
     }
 
-    char buffer[100];
+    char buffer[BUFFER_LEN];
 
     sprintf(buffer, "key pressed: 0x%x, %d\n", code, code);
 

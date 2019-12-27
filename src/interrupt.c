@@ -1,6 +1,6 @@
+#include <stdio.h>
 #include "interrupt.h"
 #include "serial_port.h"
-#include "printf.h"
 #include "pic.h"
 
 static interrupt_callback callback_map[256];
@@ -21,7 +21,7 @@ void interrupt_handler(register_info *info)
   }
   else
   {
-    char buffer[100];
+    char buffer[BUFFER_LEN];
 
     if (info->int_number == 13)
     {

@@ -7,5 +7,5 @@ typedef enum
 } com_port;
 
 void serial_port_init(com_port port);
-size_t serial_port_printf(com_port port, char *string);
+int serial_port_printf(com_port port, const char *format, ...);
 void serial_port_putchar(com_port port, char c);
