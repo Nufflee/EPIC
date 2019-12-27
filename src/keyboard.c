@@ -27,11 +27,7 @@ static void keyboard_interrupt_handler()
 
   if (c > 0)
   {
-    char buffer[BUFFER_LEN];
-
-    sprintf(buffer, "%d\n", c);
-
-    serial_port_printf(COM1, buffer);
+    serial_port_printf(COM1, "%d\n", c);
 
     terminal_putchar(c);
   }
@@ -66,41 +62,4 @@ static u8 scancode_to_ascii(u8 code)
     return yxcvbnm[code - 0x2C];
 
   return 0;
-}
-
-void keyboard_start_polling()
-{
-  char code;
-
-  while (1)
-  {
-    if (code == in8(0x60))
-    {
-      continue;
-    }
-
-    code = in8(0x60);
-
-    if (code & 0x80 || code == 0x8)
-    {
-      continue;
-    }
-
-    char buffer[BUFFER_LEN];
-
-    sprintf(buffer, "key pressed: 0x%x, %d\n", code, code);
-
-    serial_port_printf(COM1, buffer);
-
-    sprintf(buffer, "0x64 port: 0x%x\n", in8(0x64));
-
-    serial_port_printf(COM1, buffer);
-
-    char c = scancode_to_ascii(code);
-
-    if (c > 0)
-    {
-      terminal_putchar(c);
-    }
-  }
 }

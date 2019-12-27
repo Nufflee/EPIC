@@ -1,8 +1,6 @@
-#include <stddef.h>
 #include <stdio.h>
 #include "keyboard.h"
 #include "serial_port.h"
-#include "io.h"
 #include "terminal.h"
 #include "gdt.h"
 #include "idt.h"
