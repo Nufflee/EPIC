@@ -24,7 +24,7 @@ void screen_clear()
   {
     for (u16 y = 0; y < VGA_HEIGHT; y++)
     {
-      display_buffer[screen_position_to_index(x, y)] = ' ' | (7 << 8);
+      display_buffer[screen_position_to_index(x, y)] = '\0' | (7 << 8);
     }
   }
 }
