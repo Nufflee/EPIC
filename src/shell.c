@@ -20,7 +20,7 @@ static void shell_shift_buffer_in_range(shell_range, int);
 static u16 shell_position_to_index(shell_position);
 static u16 shell_coordinate_to_index(u8, u8);
 static shell_position shell_index_to_position(u16);
-static void shell_handle_backspace_key();
+static void shell_handle_deletion_key(bool);
 
 void shell_init()
 {
@@ -40,7 +40,10 @@ static void on_key_press(scan_code code)
     cursor_position.x++;
     break;
   case BACKSPACE_PRESSED:
-    shell_handle_backspace_key();
+    shell_handle_deletion_key(false);
+    break;
+  case DELETE_PRESSED:
+    shell_handle_deletion_key(true);
     break;
   default:
     break;
@@ -68,7 +71,18 @@ void shell_putchar(char c)
   {
     memcpy(&old_line_buffer, &line_buffer, sizeof(line_buffer));
 
-    line_buffer[shell_coordinate_to_index(cursor_position.x++, cursor_position.y)] = c;
+    char *char_at_cursor = &line_buffer[shell_position_to_index(cursor_position)];
+
+    if (*char_at_cursor != '\0')
+    {
+      shell_range range = {cursor_position, shell_get_current_line_range().end};
+
+      shell_shift_buffer_in_range(range, 1);
+    }
+
+    *char_at_cursor = c;
+
+    cursor_position.x++;
 
     shell_redraw();
   }
@@ -77,26 +91,35 @@ void shell_putchar(char c)
   shell_update_cursor();
 }
 
-static void shell_handle_backspace_key()
+static void shell_handle_deletion_key(bool is_delete_key)
 {
   shell_position line_end_position = shell_get_current_line_range().end;
+  shell_position start_position = cursor_position;
+
+  if (is_delete_key)
+  {
+    start_position.x++;
+  }
 
   memcpy(&old_line_buffer, &line_buffer, sizeof(line_buffer));
 
-  if (is_shell_position_greater(line_end_position, cursor_position))
+  if (is_shell_position_greater(line_end_position, start_position))
   {
-    shell_range range = {cursor_position, line_end_position};
+    shell_range range = {start_position, line_end_position};
 
     shell_shift_buffer_in_range(range, -1);
   }
   else
   {
-    line_buffer[shell_coordinate_to_index(cursor_position.x - 1, cursor_position.y)] = '\0';
+    line_buffer[shell_coordinate_to_index(cursor_position.x - (is_delete_key ? 0 : 1), cursor_position.y)] = '\0';
+  }
+
+  if (!is_delete_key)
+  {
+    cursor_position.x--;
   }
 
   shell_redraw();
-
-  cursor_position.x--;
 }
 
 static shell_range shell_get_current_line_range()
@@ -176,10 +199,23 @@ static void shell_handle_overflow()
 
 static void shell_shift_buffer_in_range(shell_range range, int delta)
 {
-  for (u16 i = shell_position_to_index(range.start); i < shell_position_to_index(range.end); i++)
+  u16 start_index = shell_position_to_index(range.start);
+  u16 end_index = shell_position_to_index(range.end);
+
+  if (delta > 0)
   {
-    line_buffer[i + delta] = line_buffer[i];
-    line_buffer[i] = '\0';
+    for (u16 i = end_index; i >= start_index; i--)
+    {
+      line_buffer[i + delta] = line_buffer[i];
+    }
+  }
+  else
+  {
+    for (u16 i = start_index; i < end_index; i++)
+    {
+      line_buffer[i + delta] = line_buffer[i];
+      line_buffer[i] = '\0';
+    }
   }
 }
 
