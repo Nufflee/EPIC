@@ -26,6 +26,7 @@ QEMU_FLAGS  := -serial stdio
 all: $(OS.BIN) run
 
 $(OS.BIN): build
+	grub-file --is-x86-multiboot $(OS.BIN)
 
 build: $(BOOT.O) objs link
 
@@ -59,7 +60,7 @@ run_iso: iso
 	$(QEMU) -cdrom os.iso $(QEMU_FLAGS)
 
 clean:
-	rm -rf $(BUILD_DIR)
-	rm -rf $(ISO_DIR)
+	-rm -rf $(BUILD_DIR)
+	-rm -rf $(ISO_DIR)
 	
-	rm os.iso 
+	-rm os.iso 
