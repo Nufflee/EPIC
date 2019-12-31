@@ -1,19 +1,19 @@
-CC				 := i686-linux-gnu-gcc-8
-AS				 := i686-linux-gnu-as
-CCFLAGS		 := -g -ffreestanding -Wall -Wextra -Werror -Isrc -lgcc -nostartfiles -fno-pie
-LDFLAGS	   := -g -ffreestanding -nostdlib -nostartfiles
+CC      := i686-linux-gnu-gcc-8
+AS      := i686-linux-gnu-as
+CCFLAGS := -g -ffreestanding -Wall -Wextra -Werror -Isrc -lgcc -nostartfiles -fno-pie
+LDFLAGS := -g -ffreestanding -nostdlib -nostartfiles
 
-BUILDDIR	 := build
-SRCDIR		 := src
-ISODIR		 := $(BUILDDIR)
-SOURCES		 := $(shell find $(SRCDIR) -type f -name "*.c")
-ARCH			 := i386
-ARCHDIR		 := $(SRCDIR)
-OS.BIN		 := $(BUILDDIR)/os.bin
-BOOT.S		 := $(ARCHDIR)/boot.s
-BOOT.O		 := $(BUILDDIR)/boot.o
-LINKER.LD	 := $(ARCHDIR)/linker.ld
-OBJS			 := $(addprefix $(BUILDDIR)/, $(notdir $(patsubst %.c, %.o, $(SOURCES)))) $(BOOT.O)
+BUILDDIR	:= build
+SRCDIR		:= src
+ISODIR		:= $(BUILDDIR)
+SOURCES		:= $(shell find $(SRCDIR) -type f -name "*.c")
+ARCH        := i386
+ARCHDIR		:= $(SRCDIR)
+OS.BIN		:= $(BUILDDIR)/os.bin
+BOOT.S		:= $(ARCHDIR)/boot.s
+BOOT.O		:= $(BUILDDIR)/boot.o
+LINKER.LD	:= $(ARCHDIR)/linker.ld
+OBJS        := $(addprefix $(BUILDDIR)/, $(notdir $(patsubst %.c, %.o, $(SOURCES)))) $(BOOT.O)
 
 .PHONY = all build objs link run clean
 
