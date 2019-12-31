@@ -1,2 +1,7 @@
+# Compiled output and Intermediate files / folders
 build
+isodir
+os.iso
+
+# To Do file
 OS.todo
