@@ -84,5 +84,6 @@ typedef void (*keyboard_callback)(scan_code code);
 
 void keyboard_init();
 void keyboard_start_polling();
+char asciify_scan_code(u8 code);
 
 void keyboard_add_key_press_callback(keyboard_callback callback);

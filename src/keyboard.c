@@ -16,11 +16,25 @@ void keyboard_init()
   set_interrupt_callback(KEYBOARD_INTERUPT, keyboard_interrupt_handler);
 }
 
+void keyboard_add_key_press_callback(keyboard_callback callback)
+{
+  static u8 last_callback_index = 0;
+
+  if (last_callback_index >= 11)
+  {
+    serial_port_printf(COM1, "No more key press callback slots!");
+
+    return;
+  }
+
+  key_press_callbacks[last_callback_index++] = callback;
+}
+
 static void keyboard_interrupt_handler()
 {
   u16 scan_code = in8(0x60);
 
-  if (scan_code != 0xe0)
+  if (scan_code != 0xE0)
   {
     if (last_scan_code == 0xE0)
     {
@@ -41,16 +55,42 @@ static void keyboard_interrupt_handler()
   last_scan_code = scan_code;
 }
 
-void keyboard_add_key_press_callback(keyboard_callback callback)
+static char *qwertzuiop = "qwertzuiop";
+static char *asdfghjkl = "asdfghjkl";
+static char *yxcvbnm = "yxcvbnm";
+static char *numbers = "123456789";
+
+char asciify_scan_code(u8 code)
 {
-  static u8 last_callback_index = 0;
-
-  if (last_callback_index >= 11)
+  switch (code)
   {
-    serial_port_printf(COM1, "No more key press callback slots!");
-
-    return;
+  case SPACE_PRESSED:
+    return ' ';
+  case POINT_PRESSED:
+    return '.';
+  case SLASH_RELEASED:
+    return '/';
+  case ZERO_PRESSED:
+    return '0';
   }
 
-  key_press_callbacks[last_callback_index++] = callback;
+  if (code >= ONE_PRESSED && code <= NINE_PRESSED)
+  {
+    return numbers[code - ONE_PRESSED];
+  }
+
+  if (code >= Q_PRESSED && code <= ENTER_PRESSED)
+  {
+    return qwertzuiop[code - 0x10];
+  }
+  else if (code >= A_PRESSED && code <= L_PRESSED)
+  {
+    return asdfghjkl[code - 0x1E];
+  }
+  else if (code >= Y_PRESSED && code <= M_PRESSED)
+  {
+    return yxcvbnm[code - 0x2C];
+  }
+
+  return 0;
 }
