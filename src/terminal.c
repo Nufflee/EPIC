@@ -219,7 +219,8 @@ static void terminal_redraw()
     {
       terminal_position position = terminal_index_to_position(i);
 
-      screen_draw_char_at(position.x, position.y, c);
+      //NOTE: you now have colours
+      screen_draw_char_at(position.x, position.y,10,0,c);
     }
   }
 }

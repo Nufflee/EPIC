@@ -3,8 +3,6 @@
 #include "io.h"
 #include "serial_port.h"
 
-static u16 *display_buffer = (u16 *)0xB8000;
-
 void screen_init()
 {
   screen_clear();
@@ -20,18 +18,23 @@ void screen_init()
 
 void screen_clear()
 {
+  u16 attrib = (0 << 4) | (0 & 0x0F);
+  volatile u16 * where;
+
   for (u16 x = 0; x < VGA_WIDTH; x++)
   {
     for (u16 y = 0; y < VGA_HEIGHT; y++)
     {
-      display_buffer[screen_position_to_index(x, y)] = '\0' | (7 << 8);
+      
+     where = (volatile u16 *)0xB8000 + (y * VGA_WIDTH + x) ;
+     *where = '\0' | (attrib << 8);
     }
   }
 }
 
 void screen_set_cursor_position(i8 x, i8 y)
 {
-  u16 index = screen_position_to_index(x, y + 1);
+  u16 index = (u16)(y * VGA_WIDTH + x);
 
   out8(0x3D4, 0x0F);
   out8(0x3D5, (u8)(index & 0xFF));
@@ -39,13 +42,10 @@ void screen_set_cursor_position(i8 x, i8 y)
   out8(0x3D5, (u8)((index >> 8) & 0xFF));
 }
 
-void screen_draw_char_at(u8 x, u8 y, char c)
+void screen_draw_char_at(u8 x, u8 y,u8 forecolour, u8 backcolour, char c)
 {
-  // TODO: Proper color handling
-  display_buffer[screen_position_to_index(x, y)] = c | (7 << 8);
-}
-
-u16 screen_position_to_index(u8 x, u8 y)
-{
-  return (u16)(y * VGA_WIDTH + x);
+  u16 attrib = (backcolour << 4) | (forecolour & 0x0F);
+     volatile u16 * where;
+     where = (volatile u16 *)0xB8000 + (y * VGA_WIDTH + x) ;
+     *where = c | (attrib << 8);
 }

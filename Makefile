@@ -2,7 +2,8 @@ ARCH := i386
 
 CC      := i686-linux-gnu-gcc-8
 AS      := i686-linux-gnu-as
-CCFLAGS := -g -ffreestanding -Wall -Wextra -Werror -Isrc -lgcc -nostartfiles -fno-pie
+#CCFLAGS := -g -ffreestanding -Wall -Wextra -Werror -Isrc -lgcc -nostartfiles -fno-pie
+CCFLAGS := -g -ffreestanding -Wall -Wextra -Isrc -lgcc -nostartfiles -fno-pie
 LDFLAGS := -g -ffreestanding -nostdlib -nostartfiles
 
 # Directories
