@@ -26,35 +26,35 @@ sudo apt install gcc-8-i686-linux-gnu make qemu xorriso
 
 To build just the kernel you can run:
 
-'''sh
+```sh
 make build
-'''
+```
 
 To build the kernel and then create a full cd disk image run:
 
-'''sh
+```sh
 make iso
-'''
+```
 
 ## Running
 
 There are a couple of different options to test run using qemu you can either build and run the kernel directly by using:
 
-'''sh
+```sh
 make
-'''
+```
 
 or
 
-'''sh
+```sh
 make run
-'''
+```
 
 Alternativly you can build a full cd disk image and run qemu off of that using:
 
-'''sh
+```sh
 make run_iso
-'''
+```
 
 Note: All of these options currently also complete of the build steps as well.
 
@@ -62,6 +62,6 @@ Note: All of these options currently also complete of the build steps as well.
 
 Running the kernel in a debugger (gdb) can be done using:
 
-'''sh
+```sh
 make debug
-'''
+```
