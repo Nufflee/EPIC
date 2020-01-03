@@ -25,7 +25,7 @@ static void terminal_handle_deletion_key(bool);
 static char terminal_get_current_char();
 static terminal_range terminal_get_editable_range();
 static terminal_position new_terminal_position(u8, u8);
-static bool terminal_is_position_inside_range(terminal_position, terminal_range);
+static bool terminal_is_position_in_range(terminal_position, terminal_range);
 
 void terminal_init()
 {
@@ -39,7 +39,7 @@ static void on_key_press(scan_code code)
   switch (code)
   {
   case LEFT_ARROW_PRESSED:
-    if (terminal_is_position_inside_range(new_terminal_position(cursor_position.x - 1, cursor_position.y), terminal_get_editable_range()))
+    if (terminal_is_position_in_range(new_terminal_position(cursor_position.x - 1, cursor_position.y), terminal_get_editable_range()))
     {
       cursor_position.x--;
     }
@@ -53,7 +53,7 @@ static void on_key_press(scan_code code)
 
     break;
   case BACKSPACE_PRESSED:
-    if (terminal_is_position_inside_range(new_terminal_position(cursor_position.x - 1, cursor_position.y), terminal_get_editable_range()))
+    if (terminal_is_position_in_range(new_terminal_position(cursor_position.x - 1, cursor_position.y), terminal_get_editable_range()))
     {
       terminal_handle_deletion_key(false);
     }
@@ -192,9 +192,9 @@ static terminal_range terminal_get_current_line_range()
   return result;
 }
 
-static bool terminal_is_position_inside_range(terminal_position position, terminal_range range)
+static bool terminal_is_position_in_range(terminal_position position, terminal_range range)
 {
-  return position.x >= range.start.x && position.y >= range.start.y && position.x <= range.end.x && position.y <= range.end.y;
+  return (position.x >= range.start.x || position.y != range.start.y) && (position.x <= range.end.x || position.y != range.end.y);
 }
 
 static terminal_position new_terminal_position(u8 x, u8 y)
