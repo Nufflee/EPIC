@@ -27,7 +27,7 @@ void screen_clear()
 
 void screen_set_cursor_position(i8 x, i8 y)
 {
-  u16 index = (u16)(y * VGA_WIDTH + x);
+  u16 index = screen_position_to_index(x,y);
 
   out8(0x3D4, 0x0F);
   out8(0x3D5, (u8)(index & 0xFF));
@@ -35,15 +35,9 @@ void screen_set_cursor_position(i8 x, i8 y)
   out8(0x3D5, (u8)((index >> 8) & 0xFF));
 }
 
-void screen_draw_char_at(u8 x, u8 y,u8 forecolour, u8 backcolour,u8 lightmode, char c)
+void screen_draw_char_at(u8 x, u8 y,u8 textcolour, u8 backcolour, char c)
 {
-  u16 screen_data_to_be_drawn;
-  if(lightmode == 1)
-    screen_data_to_be_drawn = (backcolour << 4) | (forecolour & 0x0F);
-  else
-    screen_data_to_be_drawn = (backcolour << 4) | ((forecolour + 8) & 0x0F);
-
-  display_buffer[screen_position_to_index(x,y)] = c | (screen_data_to_be_drawn << 8);
+  display_buffer[screen_position_to_index(x,y)] = c | (((backcolour << 4) | (textcolour & 0x0F)) << 8);
 }
 
 u16 screen_position_to_index(u8 x, u8 y)

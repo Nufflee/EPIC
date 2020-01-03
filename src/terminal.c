@@ -31,9 +31,7 @@ void terminal_init()
 {
   keyboard_add_key_press_callback(on_key_press);
 
-  printf("Welcome to the EPIC Kernel Shell v 0.0.1\n");
   printf(PROMPT);
-  
 }
 
 static void on_key_press(scan_code code)
@@ -231,8 +229,7 @@ static void terminal_redraw()
     {
       terminal_position position = terminal_index_to_position(i);
 
-      //NOTE: you now have colours
-      screen_draw_char_at(position.x, position.y,VGA_WHITE,VGA_BLACK,1,c);
+      screen_draw_char_at(position.x, position.y,WHITE,BLACK,c);
     }
   }
 }
