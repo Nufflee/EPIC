@@ -20,11 +20,12 @@ static bool is_terminal_position_greater(terminal_position, terminal_position);
 static terminal_range terminal_get_current_line_range();
 static void terminal_shift_buffer_in_range(terminal_range, int);
 static u16 terminal_position_to_index(terminal_position);
-static u16 terminal_coordinate_to_index(u8, u8);
 static terminal_position terminal_index_to_position(u16);
 static void terminal_handle_deletion_key(bool);
 static char terminal_get_current_char();
 static terminal_range terminal_get_editable_range();
+static terminal_position new_terminal_position(u8, u8);
+static bool terminal_is_position_inside_range(terminal_position, terminal_range);
 
 void terminal_init()
 {
@@ -38,7 +39,11 @@ static void on_key_press(scan_code code)
   switch (code)
   {
   case LEFT_ARROW_PRESSED:
-    cursor_position.x--;
+    if (terminal_is_position_inside_range(new_terminal_position(cursor_position.x - 1, cursor_position.y), terminal_get_editable_range()))
+    {
+      cursor_position.x--;
+    }
+
     break;
   case RIGHT_ARROW_PRESSED:
     if (terminal_get_current_char() != '\0')
@@ -48,7 +53,11 @@ static void on_key_press(scan_code code)
 
     break;
   case BACKSPACE_PRESSED:
-    terminal_handle_deletion_key(false);
+    if (terminal_is_position_inside_range(new_terminal_position(cursor_position.x - 1, cursor_position.y), terminal_get_editable_range()))
+    {
+      terminal_handle_deletion_key(false);
+    }
+
     break;
   case DELETE_PRESSED:
     terminal_handle_deletion_key(true);
@@ -71,17 +80,6 @@ static void on_key_press(scan_code code)
 
     return;
   }
-  }
-
-  terminal_range editable_range = terminal_get_editable_range();
-
-  if (cursor_position.x < editable_range.start.x && cursor_position.y == editable_range.start.y)
-  {
-    cursor_position.x++;
-  }
-  else if (cursor_position.x > editable_range.end.x && cursor_position.y == editable_range.end.y)
-  {
-    cursor_position.x--;
   }
 
   terminal_handle_overflow();
@@ -139,7 +137,7 @@ static void terminal_handle_deletion_key(bool is_delete_key)
   }
   else
   {
-    line_buffer[terminal_coordinate_to_index(cursor_position.x - (is_delete_key ? 0 : 1), cursor_position.y)] = '\0';
+    line_buffer[terminal_position_to_index(new_terminal_position(cursor_position.x - (is_delete_key ? 0 : 1), cursor_position.y))] = '\0';
   }
 
   if (!is_delete_key)
@@ -176,7 +174,7 @@ static terminal_range terminal_get_current_line_range()
 {
   terminal_position end_position = cursor_position;
 
-  for (int i = terminal_coordinate_to_index(0, cursor_position.y); i < VGA_WIDTH * VGA_HEIGHT; i++)
+  for (int i = terminal_position_to_index(new_terminal_position(0, cursor_position.y)); i < VGA_WIDTH * VGA_HEIGHT; i++)
   {
     if (line_buffer[i] == '\0')
     {
@@ -192,6 +190,18 @@ static terminal_range terminal_get_current_line_range()
   };
 
   return result;
+}
+
+static bool terminal_is_position_inside_range(terminal_position position, terminal_range range)
+{
+  return position.x >= range.start.x && position.y >= range.start.y && position.x <= range.end.x && position.y <= range.end.y;
+}
+
+static terminal_position new_terminal_position(u8 x, u8 y)
+{
+  terminal_position position = {x, y};
+
+  return position;
 }
 
 static bool is_terminal_position_greater(terminal_position position1, terminal_position position2)
@@ -278,12 +288,7 @@ static void terminal_shift_buffer_in_range(terminal_range range, int delta)
 
 static u16 terminal_position_to_index(terminal_position position)
 {
-  return terminal_coordinate_to_index(position.x, position.y);
-}
-
-static u16 terminal_coordinate_to_index(u8 x, u8 y)
-{
-  return y * VGA_WIDTH + x;
+  return position.y * VGA_WIDTH + position.x;
 }
 
 static terminal_position terminal_index_to_position(u16 index)
