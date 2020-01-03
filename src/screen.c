@@ -38,7 +38,6 @@ void screen_set_cursor_position(i8 x, i8 y)
 void screen_draw_char_at(u8 x, u8 y,u8 forecolour, u8 backcolour,u8 lightmode, char c)
 {
   u16 screen_data_to_be_drawn;
-
   if(lightmode == 1)
     screen_data_to_be_drawn = (backcolour << 4) | (forecolour & 0x0F);
   else
