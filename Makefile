@@ -24,6 +24,11 @@ QEMU_FLAGS := -serial stdio
 
 .PHONY = all build objs link run clean
 
+# this is the command to run if using WSL on windows
+windowsBuild: build objs link setup_disk
+$(OS.BIN): build
+	grub-file --is-x86-multiboot $(OS.BIN);
+
 all: $(OS.BIN) run
 
 $(OS.BIN): build
