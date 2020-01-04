@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stddef.h>
 
 /* Single GDT entry

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stddef.h>
 
 typedef struct terminal_position

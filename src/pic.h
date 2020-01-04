@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stddef.h>
 
 #define PIC1 0x20

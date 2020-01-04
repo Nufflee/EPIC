@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stddef.h>
 
 void out8(u16 port, u8 value);

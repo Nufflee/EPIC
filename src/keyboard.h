@@ -1,3 +1,5 @@
+#pragma once
+
 // Some code yoinked from here: https://github.com/levex/osdev/blob/master/drivers/keyboard.c
 
 typedef enum scan_code
