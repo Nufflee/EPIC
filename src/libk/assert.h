@@ -2,7 +2,7 @@
 
 #ifndef RELEASE
 #include <stdbool.h>
-#include "serial_port.h"
+#include <kernel/serial_port.h>
 
 #define ASSERT_M(condition, message)                                                         \
   do                                                                                         \
@@ -10,9 +10,10 @@
     if (!(condition))                                                                        \
     {                                                                                        \
       serial_port_printf(COM1, "[%s:%d] %s: %s", __FILE__, __LINE__, __FUNCTION__, message); \
-    }                                                                                        \
-    while (true)                                                                             \
-    {                                                                                        \
+                                                                                             \
+      while (true)                                                                           \
+      {                                                                                      \
+      }                                                                                      \
     }                                                                                        \
   } while (false)
 

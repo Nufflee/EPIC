@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
-#include "terminal.h"
+#include <kernel/terminal.h>
+#include <libk/assert.h>
 #include "printf.h"
-#include "serial_port.h"
 
 int printf(const char *format, ...)
 {
@@ -13,12 +13,7 @@ int printf(const char *format, ...)
 
   int len = vsnprintf(buffer, sizeof(buffer), format, list);
 
-  if (len >= BUFFER_LEN)
-  {
-    serial_port_printf(COM1, "sprintf buffer is too smol (%d vs %d)", len, BUFFER_LEN);
-
-    return BUFFER_LEN;
-  }
+  ASSERT(len < BUFFER_LEN);
 
   for (int i = 0; i < len; i++)
   {

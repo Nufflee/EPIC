@@ -26,8 +26,8 @@ void *memset(void *buffer, int value, size_t length)
 
 void *memcpy(void *destination, void *source, size_t length)
 {
-  char *csrc = (char *)source;
-  char *cdest = (char *)destination;
+  const char *csrc = source;
+  char *cdest = destination;
 
   for (size_t i = 0; i < length; i++)
   {

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
-#include <assert.h>
+#include <libk/assert.h>
 #include "terminal.h"
 #include "keyboard.h"
 #include "screen.h"
