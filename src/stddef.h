@@ -1,15 +1,17 @@
-#define U32_MAX 2147483647
-#define SIZE_T_MAX U32_MAX
+#pragma once
 
-typedef unsigned long u64;
-typedef unsigned int u32;
-typedef unsigned short u16;
-typedef unsigned char u8;
-typedef u8 byte;
+#include <stdint.h>
 
-typedef long i64;
-typedef int i32;
-typedef short i16;
-typedef char i8;
+#define NULL 0
+
+typedef uint64_t u64;
+typedef uint32_t u32;
+typedef uint16_t u16;
+typedef uint8_t u8;
+
+typedef int64_t i64;
+typedef int32_t i32;
+typedef int16_t i16;
+typedef int8_t i8;
 
 typedef __SIZE_TYPE__ size_t;
