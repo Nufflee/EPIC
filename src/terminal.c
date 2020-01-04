@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <assert.h>
 #include "terminal.h"
 #include "keyboard.h"
 #include "screen.h"
@@ -148,22 +149,27 @@ static void terminal_handle_deletion_key(bool is_delete_key)
   terminal_redraw();
 }
 
-static terminal_range terminal_get_editable_range()
+static terminal_position terminal_get_current_prompt_position()
 {
-  terminal_position prompt_position;
-
   for (int i = VGA_HEIGHT * VGA_WIDTH; i >= 0; i--)
   {
-    if (line_buffer[i] == '>')
-    {
-      prompt_position = terminal_index_to_position(i + 2);
+    terminal_position position = terminal_index_to_position(i);
 
-      break;
+    if (position.x == 0 && line_buffer[i] == '>')
+    {
+      position.x += 2;
+
+      return position;
     }
   }
 
+  ASSERT_NOT_REACHED();
+}
+
+static terminal_range terminal_get_editable_range()
+{
   terminal_range range = {
-      .start = prompt_position,
+      .start = terminal_get_current_prompt_position(),
       .end = {VGA_WIDTH - 1, VGA_HEIGHT - 1},
   };
 
@@ -184,8 +190,10 @@ static terminal_range terminal_get_current_line_range()
     }
   }
 
+  terminal_position prompt_position = terminal_get_current_prompt_position();
+
   terminal_range result = {
-      .start = {0, cursor_position.y},
+      .start = {prompt_position.x - 2, prompt_position.y},
       .end = end_position,
   };
 
