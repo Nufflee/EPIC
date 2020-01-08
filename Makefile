@@ -1,4 +1,4 @@
-ARCH := i386
+ARCH    := i386
 
 CC      := i686-linux-gnu-gcc-8
 AS      := i686-linux-gnu-as
@@ -6,20 +6,20 @@ CCFLAGS := -g -ffreestanding -Wall -Wextra -Werror -Isrc -Isrc/libc -lgcc -nosta
 LDFLAGS := -g -ffreestanding -nostdlib -nostartfiles
 
 # Directories
-BUILD_DIR	:= build
-SRC_DIR		:= src
-ISO_DIR		:= isodir
-ARCH_DIR  := $(SRC_DIR)
+BUILD_DIR   := build
+SRC_DIR     := src
+ISO_DIR     := isodir
+ARCH_DIR    := $(SRC_DIR)
 
-SOURCES		:= $(shell find $(SRCDIR) -type f -name "*.c")
-OS.BIN		:= $(BUILD_DIR)/os.bin
-BOOT.S		:= $(ARCH_DIR)/boot.s
-BOOT.O		:= $(BUILD_DIR)/boot.o
-LINKER.LD	:= $(ARCH_DIR)/linker.ld
-OBJS      := $(addprefix $(BUILD_DIR)/, $(notdir $(patsubst %.c, %.o, $(SOURCES)))) $(BOOT.O)
+SOURCES     := $(shell find $(SRC_DIR) -type f -name "*.c")
+OS.BIN      := $(BUILD_DIR)/os.bin
 
-QEMU       := qemu-system-$(ARCH)
-QEMU_FLAGS := -serial stdio
+BOOT.S      := $(SRC_DIR)/boot.s
+LINKER.LD   := $(ARCH_DIR)/linker.ld
+OBJS        := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o)) $(addprefix $(BUILD_DIR)/,$(BOOT.S:.s=.s.o))
+
+QEMU        := qemu-system-$(ARCH)
+QEMU_FLAGS  := -serial stdio
 
 .PHONY = all build objs link run clean
 
@@ -28,18 +28,21 @@ all: $(OS.BIN) run
 $(OS.BIN): build
 	grub-file --is-x86-multiboot $(OS.BIN)
 
-build: $(BOOT.O) objs link
+build: link
 
-$(BOOT.O): $(BOOT.S)
-	mkdir -p $(BUILD_DIR)
 
-	$(AS) $(BOOT.S) -o $(BOOT.O)
+link: $(LINKER.LD) $(OBJS)
+	$(CC) -Wl,-T$(LINKER.LD) -o $(OS.BIN) $(LDFLAGS) $(OBJS)
 
-objs:
-	for f in $$(echo "$(SOURCES)" | tr -s " " "\012"); do $(CC) -c $$f -o $$(echo "build/$$(basename $$f | sed "s/\.c/\.o/g")") $(CCFLAGS) || exit; done;
+$(BUILD_DIR)/%.s.o: %.s
+	@mkdir -p $(dir $@)
+	$(AS) $< -o $@
 
-link: $(LINKER.LD)
-	$(CC) -T $(LINKER.LD) -o $(OS.BIN) $(LDFLAGS) $(OBJS)
+$(BUILD_DIR)/%.c.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) -c $< -o $@ $(CCFLAGS)
+
+
 
 setup_disk: $(OS.BIN)
 	mkdir -p $(ISO_DIR)/boot/grub
