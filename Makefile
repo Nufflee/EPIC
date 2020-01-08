@@ -1,9 +1,9 @@
-ARCH    := i386
+ARCH        := i386
 
-CC      := i686-linux-gnu-gcc-8
-AS      := i686-linux-gnu-as
-CCFLAGS := -g -ffreestanding -Wall -Wextra -Werror -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie
-LDFLAGS := -g -ffreestanding -nostdlib -nostartfiles
+CC          := i686-linux-gnu-gcc-8
+AS          := i686-linux-gnu-as
+CCFLAGS     := -g -ffreestanding -Wall -Wextra -Werror -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie
+LDFLAGS     := -g -ffreestanding -nostdlib -nostartfiles
 
 # Directories
 BUILD_DIR   := build
@@ -23,13 +23,12 @@ QEMU_FLAGS  := -serial stdio
 
 .PHONY = all build objs link run clean
 
-all: $(OS.BIN) run
+all: $(OS.BIN)
 
 $(OS.BIN): build
 	grub-file --is-x86-multiboot $(OS.BIN)
 
 build: link
-
 
 link: $(LINKER.LD) $(OBJS)
 	$(CC) -Wl,-T$(LINKER.LD) -o $(OS.BIN) $(LDFLAGS) $(OBJS)
@@ -41,8 +40,6 @@ $(BUILD_DIR)/%.s.o: %.s
 $(BUILD_DIR)/%.c.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ $(CCFLAGS)
-
-
 
 setup_disk: $(OS.BIN)
 	mkdir -p $(ISO_DIR)/boot/grub
@@ -66,4 +63,4 @@ clean:
 	-rm -rf $(BUILD_DIR)
 	-rm -rf $(ISO_DIR)
 
-	-rm os.iso
+	-rm -rf os.iso
