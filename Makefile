@@ -16,7 +16,7 @@ OS.BIN      := $(BUILD_DIR)/os.bin
 
 BOOT.S      := $(SRC_DIR)/boot.s
 LINKER.LD   := $(ARCH_DIR)/linker.ld
-OBJS        := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o)) $(addprefix $(BUILD_DIR)/,$(BOOT.S:.s=.s.o))
+OBJS        := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o) $(BOOT.S:.s=.s.o))
 
 QEMU        := qemu-system-$(ARCH)
 QEMU_FLAGS  := -serial stdio
