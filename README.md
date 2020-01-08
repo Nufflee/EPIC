@@ -1,6 +1,6 @@
-# os
+# EPIC
 
-A small kernel/OS experiment with the goal of running a precompiled 64-bit Linux ELF executable of `echo` to learn what it takes to make such an OS.
+EPIC is a small kernel/OS experiment with the goal of running a precompiled 64-bit (or 32-bit) Linux ELF executable of `echo` to learn what it takes to make such an OS.
 
 The kernel can currently only run in 32-bit protected mode on an x86 (i386) machine.
 
@@ -8,12 +8,14 @@ Development is sometimes streamed on [my Twitch channel](https://www.twitch.tv/n
 
 ## Dependencies
 
-- gcc 8
+- i686 gcc8
 - make
 - qemu (for testing and debugging)
-- xorriso
+- xorriso (optional, only needed for ISO creation)
 
 ## Ubuntu Setup
+
+(Note: this also works perfectly on Ubuntu WSL with an X Server for QEMU)
 
 If you're using and Ubuntu / Debian based OS you can just run these commands to do all of the reuqired setup of the dependencies etc
 
@@ -30,7 +32,7 @@ To build just the kernel you can run:
 make build
 ```
 
-To build the kernel and then create a full cd disk image run:
+To build the kernel and then create a full cd disk image run (xorriso is needed for this to succeed):
 
 ```sh
 make iso
@@ -39,12 +41,6 @@ make iso
 ## Running
 
 There are a couple of different options to test run using qemu you can either build and run the kernel directly by using:
-
-```sh
-make
-```
-
-or
 
 ```sh
 make run
