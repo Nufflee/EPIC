@@ -8,7 +8,7 @@ Development is sometimes streamed on [my Twitch channel](https://www.twitch.tv/n
 
 ## Dependencies
 
-- gcc
+- i686 gcc8
 - make
 - qemu (for testing and debugging)
 - xorriso (optional, only needed for ISO creation)
@@ -21,7 +21,7 @@ If you're using and Ubuntu / Debian based OS you can just run these commands to 
 
 ```sh
 sudo apt update
-sudo apt install gcc make qemu xorriso
+sudo apt install gcc-8-i686-linux-gnu make qemu xorriso
 ```
 
 ## Building
