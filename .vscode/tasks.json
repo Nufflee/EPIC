@@ -1,0 +1,35 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "build"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "setup_disk",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "setup_disk"
+            ],
+            "dependsOn": "build",
+            "presentation": {
+                "reveal": "always",
+            }
+        }
+    ]
+}

@@ -1,15 +1,27 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "gdb",
-      "request": "attach",
-      "name": "Attach to gdbserver",
-      "executable": "./build/os.bin",
-      "target": ":1234",
-      "remote": true,
-      "cwd": "${workspaceRoot}",
-      "valuesFormatting": "parseText"
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/isodir/boot/os.bin",
+            "args": [
+                "--command=debug.dbg"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "setup_disk"
+        }
+    ]
 }
