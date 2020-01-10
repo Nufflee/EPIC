@@ -1,9 +1,9 @@
 ARCH        := i386
 
-CC          := gcc -m32 # i686-linux-gnu-gcc-8
-AS          := gcc -m32 -x assembler -c # i686-linux-gnu-as
-CCFLAGS     := -g -ffreestanding -nostdlib -nostartfiles -nolibc -Wall -Wextra -Werror -Isrc -Isrc/libc -fno-pie -fno-stack-protector # -lgcc
-LDFLAGS     := -g -ffreestanding -nostdlib -nostartfiles -nolibc
+CC          := i686-linux-gnu-gcc-8
+AS          := i686-linux-gnu-as
+CCFLAGS     := -g -ffreestanding -Wall -Wextra -Werror -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie
+LDFLAGS     := -g -ffreestanding -nostdlib -nostartfiles
 
 # Directories
 BUILD_DIR   := build
