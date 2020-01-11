@@ -1,4 +1,7 @@
 #include <stdio.h>
+#include <libk/assert.h>
+#include "memory_manager.h"
+#include "multiboot.h"
 #include "keyboard.h"
 #include "serial_port.h"
 #include "screen.h"
@@ -7,9 +10,13 @@
 #include "idt.h"
 #include "pic.h"
 
-void kernel_main()
+void kernel_main(u32 multiboot_magic, multiboot_info_t *multiboot)
 {
+  memory_manager_init(multiboot);
+
   serial_port_init(COM1);
+
+  ASSERT(multiboot_magic == MULTIBOOT_BOOTLOADER_MAGIC);
 
   program_pics();
 

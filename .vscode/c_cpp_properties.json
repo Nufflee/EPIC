@@ -12,7 +12,7 @@
       ],
       "compilerPath": "/usr/bin/i686-linux-gnu-gcc",
       "cStandard": "c11",
-      "intelliSenseMode": "gcc-x64"
+      "intelliSenseMode": "gcc-x86"
     }
   ],
   "version": 4

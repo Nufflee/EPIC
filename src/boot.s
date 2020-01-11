@@ -101,6 +101,14 @@ _start:
 	*/
 
 	/*
+	This is pushing the multiboot bootloader magic number and multiboot
+	info struct pointer to the stack so they can be passed to `kernel_main`
+	as arguments.
+	*/
+	push %ebx
+	push %eax
+
+	/*
 	Enter the high-level kernel. The ABI requires the stack is 16-byte
 	aligned at the time of the call instruction (which afterwards pushes
 	the return pointer of size 4 bytes). The stack was originally 16-byte
