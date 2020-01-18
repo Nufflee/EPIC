@@ -9,10 +9,12 @@
 #include "gdt.h"
 #include "idt.h"
 #include "pic.h"
+#include "kmalloc.h"
 
 void kernel_main(u32 multiboot_magic, multiboot_info_t *multiboot)
 {
   memory_manager_init(multiboot);
+  kmalloc_init();
 
   serial_port_init(COM1);
 

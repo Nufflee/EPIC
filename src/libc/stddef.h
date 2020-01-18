@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#define NULL 0
+#define NULL ((void *)0)
 
 typedef uint64_t u64;
 typedef uint32_t u32;
@@ -13,5 +13,7 @@ typedef int64_t i64;
 typedef int32_t i32;
 typedef int16_t i16;
 typedef int8_t i8;
+
+typedef uintptr_t addr;
 
 typedef __SIZE_TYPE__ size_t;

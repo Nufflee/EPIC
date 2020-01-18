@@ -1,17 +1,15 @@
 #include <libk/assert.h>
+#include <libk/bits.h>
 #include "memory_manager.h"
 
 extern u32 KERNEL_END;
 
 static u8 *page_bitmap;
+static u32 page_bitmap_length;
 
 static u32 base_address = 0x400000; // ((u32)&KERNEL_END + 0x100000);
 static u32 memory_end;
 static u32 memory_page_count;
-
-#define BIT_GET(value, bit) ({ typeof(bit) bit_ = (bit); ((value & (1 << bit_)) >> bit_); })
-#define BIT_SET(value, bit) value |= 1 << bit
-#define BIT_CLEAR(value, bit) value &= ~(1 << bit)
 
 void memory_manager_init(multiboot_info_t *multiboot)
 {
@@ -33,17 +31,22 @@ void memory_manager_init(multiboot_info_t *multiboot)
 
   u32 available_memory = memory_end - base_address;
   memory_page_count = available_memory / PAGE_SIZE;
+  page_bitmap_length = memory_page_count / 8;
 
-  memset((u32 *)base_address, 0, memory_page_count / 8);
-
+  memset((u32 *)base_address, 0, page_bitmap_length);
   page_bitmap = (u8 *)base_address;
+
+  serial_port_printf(COM1, "System has %d bytes of memory avilable\n", available_memory);
+}
+
+u32 memory_manager_get_available_memory()
+{
+  return memory_end - (base_address + page_bitmap_length);
 }
 
 u32 allocate_physical_page()
 {
-  u32 bitmap_length = memory_page_count / 8;
-
-  for (u32 i = 0; i < bitmap_length; i++)
+  for (u32 i = 0; i < page_bitmap_length; i++)
   {
     u8 page_byte = page_bitmap[i];
 
@@ -53,14 +56,14 @@ u32 allocate_physical_page()
       {
         BIT_SET(page_bitmap[i], j);
 
-        u32 address = (bitmap_length + base_address) + ((i * 8) + j) * PAGE_SIZE;
+        u32 address = (page_bitmap_length + base_address) + ((i * 8) + j) * PAGE_SIZE;
 
         return address;
       }
     }
   }
 
-  ASSERT(false && "Ran out of memory!");
+  ASSERT_ALWAYS("Ran out of memory!");
 }
 
 void free_physical_page(u32 address)
