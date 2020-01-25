@@ -5,6 +5,8 @@
 #include "kmalloc.h"
 #include "memory_manager.h"
 
+#define KMALLOC_DEBUG
+
 #define CHUNK_SIZE sizeof(size_t)
 
 static u32 CHUNK_COUNT;
@@ -13,7 +15,7 @@ static u8 *pool;
 static addr *pages;
 
 static void *kalloc_eternal(size_t, size_t);
-static u16 calculate_node_checksum(allocation_node *);
+static u8 calculate_node_checksum(allocation_node *);
 
 void kmalloc_init()
 {
@@ -65,7 +67,7 @@ void *kmalloc(size_t size)
       for (size_t chunk_number = start_chunk_number; chunk_number < start_chunk_number + chunks_to_allocate; chunk_number++)
       {
         u32 pool_index = chunk_number / 8;
-        u32 page_index = chunk_number / PAGE_SIZE;
+        u32 page_index = chunk_number / (PAGE_SIZE / CHUNK_SIZE);
 
         if (pages[page_index] == 0)
         {
@@ -82,22 +84,32 @@ void *kmalloc(size_t size)
       addr addr = pages[start_page_index] + (start_chunk_number - start_page_index * PAGE_SIZE) * CHUNK_SIZE;
       allocation_node *node = (allocation_node *)addr;
 
+      memset(node, 0, sizeof(allocation_node));
+
       node->start_chunk = start_chunk_number;
-      node->chunk_size = (size - sizeof(allocation_node)) / CHUNK_SIZE;
+      node->chunk_size = divide_and_round_up((size - sizeof(allocation_node)), CHUNK_SIZE);
       node->checksum = calculate_node_checksum(node);
 
-      return node->data;
+#ifdef KMALLOC_DEBUG
+      serial_port_printf(COM1, "kmalloc: Allocated %d chunks (%d bytes) at %#x (chunk %d) with checksum %d.\n", node->chunk_size, node->chunk_size * 8, (addr + sizeof(allocation_node)), node->start_chunk, node->checksum);
+#endif
+
+      return (void *)(node + 1);
     }
   }
 
   ASSERT_ALWAYS("Couldn't find a contigous sequence of chunks for this allocation!");
 }
 
-void kfree(addr address)
+void kfree(void *address)
 {
   allocation_node *node = (allocation_node *)(address - sizeof(allocation_node));
 
-  ASSERT(calculate_node_checksum(node) == node->checksum);
+#ifdef KMALLOC_DEBUG
+  serial_port_printf(COM1, "kfree: Freeing %d chunks (%d bytes) at %#x (chunk %d) with checksum %d.\n", node->chunk_size, node->chunk_size * 8, address, node->start_chunk, node->checksum);
+#endif
+
+  ASSERT(!calculate_node_checksum(node));
 
   for (size_t i = node->start_chunk; i < node->start_chunk + node->chunk_size + divide_and_round_up(sizeof(allocation_node), CHUNK_SIZE); i++)
   {
@@ -165,14 +177,14 @@ static void *kalloc_eternal(size_t element_size, size_t length)
   return (void *)result;
 }
 
-static u16 calculate_node_checksum(allocation_node *node)
+static u8 calculate_node_checksum(allocation_node *node)
 {
-  u16 checksum = 0;
+  u8 checksum = 0;
 
-  for (size_t i = 0; i < sizeof(allocation_node) - sizeof(u16); i++)
+  for (size_t i = 0; i < sizeof(allocation_node); i++)
   {
-    checksum = (checksum + ((u8 *)node)[i]) & 0xFFFF;
+    checksum = (checksum + ((u8 *)node)[i]) & 0xFF;
   }
 
-  return ((checksum ^ 0xFFFF) + 1) & 0xFFFF;
+  return ((checksum ^ 0xFF) + 1) & 0xFF;
 }
