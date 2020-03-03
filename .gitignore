@@ -5,3 +5,6 @@ os.iso
 
 # To Do file
 OS.todo
+
+# VSCode configuration
+.vscode/settings.json
