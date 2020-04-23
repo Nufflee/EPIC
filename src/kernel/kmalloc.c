@@ -14,8 +14,10 @@ static u32 CHUNK_COUNT;
 static u8 *pool;
 static addr *pages;
 
+static size_t allocated_chunk_count;
+
 static void *kalloc_eternal(size_t, size_t);
-static u8 calculate_node_checksum(allocation_node *);
+static u8 calculate_allocation_checksum(allocation_header *);
 
 void kmalloc_init()
 {
@@ -31,7 +33,7 @@ void *kmalloc(size_t size)
 {
   ASSERT(size > 0);
 
-  size += sizeof(allocation_node);
+  size += sizeof(allocation_header);
 
   size_t chunks_to_allocate = divide_and_round_up(size, CHUNK_SIZE);
 
@@ -82,36 +84,45 @@ void *kmalloc(size_t size)
       u32 start_page_index = start_chunk_number / PAGE_SIZE;
 
       addr addr = pages[start_page_index] + (start_chunk_number - start_page_index * PAGE_SIZE) * CHUNK_SIZE;
-      allocation_node *node = (allocation_node *)addr;
+      allocation_header *header = (allocation_header *)addr;
 
-      memset(node, 0, sizeof(allocation_node));
+      memset(header, 0, sizeof(allocation_header));
 
-      node->start_chunk = start_chunk_number;
-      node->chunk_size = divide_and_round_up((size - sizeof(allocation_node)), CHUNK_SIZE);
-      node->checksum = calculate_node_checksum(node);
+      header->start_chunk = start_chunk_number;
+      header->chunk_size = divide_and_round_up((size - sizeof(allocation_header)), CHUNK_SIZE);
+      header->checksum = calculate_allocation_checksum(header);
+
+      allocated_chunk_count += header->chunk_size;
 
 #ifdef KMALLOC_DEBUG
-      serial_port_printf(COM1, "kmalloc: Allocated %d chunks (%d bytes) at %#x (chunk %d) with checksum %d.\n", node->chunk_size, node->chunk_size * 8, (addr + sizeof(allocation_node)), node->start_chunk, node->checksum);
+      serial_port_printf(COM1, "kmalloc: Allocated %d chunks (%d bytes) at %#x (chunk %d) with checksum %d.\n", header->chunk_size, header->chunk_size * 8, (addr + sizeof(allocation_header)), header->start_chunk, header->checksum);
 #endif
 
-      return (void *)(node + 1);
+      return (void *)(header + 1);
     }
   }
 
   ASSERT_ALWAYS("Couldn't find a contigous sequence of chunks for this allocation!");
 }
 
+void *kalloc(size_t element_size, size_t length)
+{
+  return kmalloc(element_size * length);
+}
+
 void kfree(void *address)
 {
-  allocation_node *node = (allocation_node *)(address - sizeof(allocation_node));
+  allocation_header *header = (allocation_header *)(address - sizeof(allocation_header));
+
+  allocated_chunk_count -= header->chunk_size;
 
 #ifdef KMALLOC_DEBUG
-  serial_port_printf(COM1, "kfree: Freeing %d chunks (%d bytes) at %#x (chunk %d) with checksum %d.\n", node->chunk_size, node->chunk_size * 8, address, node->start_chunk, node->checksum);
+  serial_port_printf(COM1, "kfree: Freeing %d chunks (%d bytes) at %#x (chunk %d) with checksum %d. %d chunks still allocated.\n", header->chunk_size, header->chunk_size * 8, address, header->start_chunk, header->checksum, allocated_chunk_count);
 #endif
 
-  ASSERT(!calculate_node_checksum(node));
+  ASSERT(!calculate_allocation_checksum(header));
 
-  for (size_t i = node->start_chunk; i < node->start_chunk + node->chunk_size + divide_and_round_up(sizeof(allocation_node), CHUNK_SIZE); i++)
+  for (size_t i = header->start_chunk; i < header->start_chunk + header->chunk_size + divide_and_round_up(sizeof(allocation_header), CHUNK_SIZE); i++)
   {
     u16 chunk_index = i / 8;
     u8 chunk_bit = i % 8;
@@ -121,7 +132,7 @@ void kfree(void *address)
     BIT_CLEAR(pool[chunk_index], chunk_bit);
   }
 
-  for (size_t i = node->start_chunk / PAGE_SIZE; i <= (node->start_chunk + node->chunk_size) / PAGE_SIZE; i++)
+  for (size_t i = header->start_chunk / PAGE_SIZE; i <= (header->start_chunk + header->chunk_size) / PAGE_SIZE; i++)
   {
     const u32 bytes_per_page = PAGE_SIZE / CHUNK_SIZE / 8;
     bool can_free = true;
@@ -177,13 +188,13 @@ static void *kalloc_eternal(size_t element_size, size_t length)
   return (void *)result;
 }
 
-static u8 calculate_node_checksum(allocation_node *node)
+static u8 calculate_allocation_checksum(allocation_header *header)
 {
   u8 checksum = 0;
 
-  for (size_t i = 0; i < sizeof(allocation_node); i++)
+  for (size_t i = 0; i < sizeof(allocation_header); i++)
   {
-    checksum = (checksum + ((u8 *)node)[i]) & 0xFF;
+    checksum = (checksum + ((u8 *)header)[i]) & 0xFF;
   }
 
   return ((checksum ^ 0xFF) + 1) & 0xFF;
