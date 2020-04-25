@@ -95,7 +95,7 @@ void *kmalloc(size_t size)
       allocated_chunk_count += header->chunk_size;
 
 #ifdef KMALLOC_DEBUG
-      serial_port_printf(COM1, "kmalloc: Allocated %d chunks (%d bytes) at %#x (chunk %d) with checksum %d.\n", header->chunk_size, header->chunk_size * 8, (addr + sizeof(allocation_header)), header->start_chunk, header->checksum);
+      serial_port_printf(COM1, "kmalloc: Allocated %d chunks (%d bytes) at %#x (chunk %d) with checksum %d.\n", header->chunk_size, header->chunk_size * CHUNK_SIZE, (addr + sizeof(allocation_header)), header->start_chunk, header->checksum);
 #endif
 
       return (void *)(header + 1);
@@ -117,7 +117,7 @@ void kfree(void *address)
   allocated_chunk_count -= header->chunk_size;
 
 #ifdef KMALLOC_DEBUG
-  serial_port_printf(COM1, "kfree: Freeing %d chunks (%d bytes) at %#x (chunk %d) with checksum %d. %d chunks still allocated.\n", header->chunk_size, header->chunk_size * 8, address, header->start_chunk, header->checksum, allocated_chunk_count);
+  serial_port_printf(COM1, "kfree: Freeing %d chunks (%d bytes) at %#x (chunk %d) with checksum %d. %d chunks still allocated.\n", header->chunk_size, header->chunk_size * CHUNK_SIZE, address, header->start_chunk, header->checksum, allocated_chunk_count);
 #endif
 
   ASSERT(!calculate_allocation_checksum(header));
