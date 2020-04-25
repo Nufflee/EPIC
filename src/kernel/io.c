@@ -17,3 +17,14 @@ u8 in8(u16 port)
 
   return value;
 }
+
+u16 in16(u16 port)
+{
+  u16 value;
+
+  asm volatile("inw %1, %0"
+               : "=a"(value)
+               : "Nd"(port));
+
+  return value;
+}

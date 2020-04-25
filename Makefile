@@ -19,7 +19,7 @@ LINKER.LD   := $(ARCH_DIR)/linker.ld
 OBJS        := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o) $(BOOT.S:.s=.s.o))
 
 QEMU        := qemu-system-$(ARCH)
-QEMU_FLAGS  := -serial stdio
+QEMU_FLAGS  := -serial stdio -drive file=$(ISO_DIR)/boot/drive.img,format=raw
 
 .PHONY = all build objs link run clean
 
@@ -46,6 +46,8 @@ setup_disk: $(OS.BIN)
 
 	cp $(OS.BIN) $(ISO_DIR)/boot
 	cp grub.cfg $(ISO_DIR)/boot/grub
+
+	dd if=hello_world.txt of=$(ISO_DIR)/boot/drive.img
 
 run: setup_disk
 	$(QEMU) -kernel $(ISO_DIR)/boot/os.bin $(QEMU_FLAGS)
