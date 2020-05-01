@@ -11,6 +11,8 @@
     {                                                                                          \
       serial_port_printf(COM1, "[%s:%d] %s: %s\n", __FILE__, __LINE__, __FUNCTION__, message); \
                                                                                                \
+      asm volatile("cli");                                                                     \
+                                                                                               \
       while (true)                                                                             \
       {                                                                                        \
       }                                                                                        \
