@@ -19,7 +19,7 @@ LINKER.LD   := $(ARCH_DIR)/linker.ld
 OBJS        := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o) $(BOOT.S:.s=.s.o))
 
 QEMU        := qemu-system-$(ARCH)
-QEMU_FLAGS  := -serial stdio -drive file=$(ISO_DIR)/boot/drive.img,format=raw
+QEMU_FLAGS  := -kernel $(ISO_DIR)/boot/os.bin -drive file=$(ISO_DIR)/boot/drive.img,format=raw
 
 .PHONY = all build objs link run clean
 
@@ -37,7 +37,7 @@ $(BUILD_DIR)/%.s.o: %.s
 	@mkdir -p $(dir $@)
 	$(AS) $< -o $@
 
-$(BUILD_DIR)/%.c.o: %.c
+$(BUILD_DIR)/%.c.o: %.c %.h
 	@mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ $(CCFLAGS)
 
@@ -50,10 +50,10 @@ setup_disk: $(OS.BIN)
 	dd if=hello_world.txt of=$(ISO_DIR)/boot/drive.img
 
 run: setup_disk
-	$(QEMU) -kernel $(ISO_DIR)/boot/os.bin $(QEMU_FLAGS)
+	$(QEMU) -serial stdio $(QEMU_FLAGS)
 
 debug: setup_disk
-	gdb --command=debug.gdb
+	gdb -ex 'file $(ISO_DIR)/boot/os.bin' -ex 'target remote | $(QEMU) -gdb stdio -S $(QEMU_FLAGS)'
 
 iso: setup_disk
 	grub-mkrescue -o os.iso $(ISO_DIR)
