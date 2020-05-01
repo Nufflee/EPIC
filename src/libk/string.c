@@ -4,14 +4,36 @@
 #include <kernel/kmalloc.h>
 #include "string.h"
 
+string string_concat(string destination, const_string source)
+{
+  string offset = destination + string_length(destination);
+
+  memcpy(offset, source, string_length(source));
+  offset += string_length(source);
+
+  *offset = '\0';
+
+  return destination;
+}
+
+int string_compare(const_string str1, const_string str2)
+{
+  while (*str1 && (*str1 == *str2))
+  {
+    str1++, str2++;
+  }
+
+  return *(const unsigned char *)str1 - *(const unsigned char *)str2;
+}
+
 string *string_split(const_string str, const_string delimiter)
 {
-  size_t length = strlen(str);
+  size_t length = string_length(str);
   string *parts = kmalloc(length + 5);
   string substr;
   int count = 0;
 
-  for (size_t i = 0; i < strlen(str); i++)
+  for (size_t i = 0; i < string_length(str); i++)
   {
     substr = string_substring_range(str, i, length);
 
@@ -56,11 +78,11 @@ string string_normalize_spaces(const_string str)
 // TODO: Should use a better algorithm here.
 int string_find(const_string str, const_string needle)
 {
-  for (size_t i = 0; i < strlen(str); i++)
+  for (size_t i = 0; i < string_length(str); i++)
   {
     bool found = true;
 
-    for (size_t j = 0; j < strlen(needle); j++)
+    for (size_t j = 0; j < string_length(needle); j++)
     {
       if (str[i] != needle[j])
       {

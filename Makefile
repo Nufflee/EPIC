@@ -47,7 +47,7 @@ setup_disk: $(OS.BIN)
 	cp $(OS.BIN) $(ISO_DIR)/boot
 	cp grub.cfg $(ISO_DIR)/boot/grub
 
-	dd if=hello_world.txt of=$(ISO_DIR)/boot/drive.img
+	./tools/mkfs.epic.py ./root/ $(ISO_DIR)/boot/drive.img -f
 
 run: setup_disk
 	$(QEMU) -serial stdio $(QEMU_FLAGS)

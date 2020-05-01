@@ -6,10 +6,21 @@ The kernel can currently only run in 32-bit protected mode on an x86 (i386) mach
 
 Development is sometimes streamed on [my Twitch channel](https://www.twitch.tv/nuffleee).
 
+## Features
+
+- Simple memory management (physical page allocator and malloc)
+- Serial port communication (transmission/TX)
+- VGA text mode driver
+- Basic interrupt-driven keyboard driver
+- Simple terminal emulator
+- ATA driver
+- Custom file system - EPICFS
+
 ## Dependencies
 
 - i686 gcc8
 - make
+- python3 (for mkfs.epic tool that generates an EPICFS image)
 - qemu (for testing and debugging)
 - xorriso (optional, only needed for ISO creation)
 
@@ -17,11 +28,11 @@ Development is sometimes streamed on [my Twitch channel](https://www.twitch.tv/n
 
 (Note: this also works perfectly on Ubuntu WSL with an X Server for QEMU)
 
-If you're using and Ubuntu / Debian based OS you can just run these commands to do all of the reuqired setup of the dependencies etc
+If you're using and Ubuntu / Debian based OS you can just run these commands to do all of the reuqired setup of the dependencies etc.
 
 ```sh
 sudo apt update
-sudo apt install gcc-8-i686-linux-gnu make qemu xorriso
+sudo apt install gcc-8-i686-linux-gnu make python3 qemu xorriso
 ```
 
 ## Building

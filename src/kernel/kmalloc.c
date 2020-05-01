@@ -5,7 +5,7 @@
 #include "kmalloc.h"
 #include "memory_manager.h"
 
-#define KMALLOC_DEBUG
+//#define KMALLOC_DEBUG
 
 #define CHUNK_SIZE sizeof(size_t)
 
@@ -75,7 +75,9 @@ void *kmalloc(size_t size)
         {
           pages[page_index] = allocate_physical_page();
 
+#ifdef KMALLOC_DEBUG
           serial_port_printf(COM1, "kmalloc: Allocated new physical page at %#x\n", pages[page_index]);
+#endif
         }
 
         BIT_SET(pool[pool_index], chunk_number % 8);
@@ -105,9 +107,9 @@ void *kmalloc(size_t size)
   ASSERT_ALWAYS("Couldn't find a contigous sequence of chunks for this allocation!");
 }
 
-void *kalloc(size_t element_size, size_t length)
+void *kalloc(size_t length, size_t element_size)
 {
-  return kmalloc(element_size * length);
+  return kmalloc(length * element_size);
 }
 
 void kfree(void *address)
@@ -151,7 +153,9 @@ void kfree(void *address)
     {
       free_physical_page(pages[i]);
 
+#ifdef KMALLOC_DEBUG
       serial_port_printf(COM1, "kfree: Free'd physical page at %#x\n", pages[i]);
+#endif
 
       pages[i] = 0;
     }
@@ -159,7 +163,7 @@ void kfree(void *address)
 }
 
 // This should never be used after kmalloc_init!
-static void *kalloc_eternal(size_t element_size, size_t length)
+static void *kalloc_eternal(size_t length, size_t element_size)
 {
   static addr eternal_address = 0;
 
@@ -183,7 +187,9 @@ static void *kalloc_eternal(size_t element_size, size_t length)
 
   eternal_address += size;
 
+#ifdef KMALLOC_DEBUG
   serial_port_printf(COM1, "kalloc_eternal: Allocated %d pages for %d bytes\n", pages_to_allocate, size);
+#endif
 
   return (void *)result;
 }

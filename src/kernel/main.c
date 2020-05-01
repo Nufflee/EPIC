@@ -10,6 +10,8 @@
 #include "idt.h"
 #include "pic.h"
 #include "kmalloc.h"
+#include "ata.h"
+#include "epicfs.h"
 
 void kernel_main(u32 multiboot_magic, multiboot_info_t *multiboot)
 {
@@ -29,9 +31,13 @@ void kernel_main(u32 multiboot_magic, multiboot_info_t *multiboot)
 
   screen_init();
 
+  ata_init();
+
   terminal_init();
 
   serial_port_printf(COM1, "Hello, world!\n");
+
+  epicfs_pretty_print_directory_entry(*epicfs_parse_from_ata(0), "", 0);
 
   while (1)
     ;
