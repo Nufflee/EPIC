@@ -7,7 +7,7 @@
 #include "kmalloc.h"
 #include "terminal.h"
 
-u8 drive_info_buffer[512];
+u8 drive_info_buffer[SECTOR_SIZE];
 
 static void ata_400ns_delay();
 static void ata_poll();
@@ -35,7 +35,7 @@ void ata_init()
 
     serial_port_printf(COM1, "Drive is online.\n");
 
-    for (int i = 0; i < 256; i++)
+    for (int i = 0; i < SECTOR_SIZE / 2; i++)
     {
       *(uint16_t *)(drive_info_buffer + i * 2) = in16(io + ATA_REG_DATA);
     }
@@ -54,7 +54,7 @@ void ata_init()
 
 u8 *ata_read_sector(size_t sector_offset)
 {
-  u8 *buffer = kmalloc(512);
+  u8 *buffer = kmalloc(SECTOR_SIZE);
 
   u8 cmd = 0xE0;
 
@@ -72,7 +72,7 @@ u8 *ata_read_sector(size_t sector_offset)
 
   ata_poll();
 
-  for (int i = 0; i < 256; i++)
+  for (int i = 0; i < SECTOR_SIZE / 2; i++)
   {
     uint16_t data = in16(io + ATA_REG_DATA);
     *(uint16_t *)(buffer + i * 2) = data;
@@ -92,9 +92,9 @@ u8 *ata_read(size_t sector_offset, size_t length)
   while (bytes_left > 0)
   {
     u8 *sector_buffer = ata_read_sector(sector_offset + i);
-    size_t bytes_read = min(512, bytes_left);
+    size_t bytes_read = min(SECTOR_SIZE, bytes_left);
 
-    memcpy(buffer + (i * 512), sector_buffer, bytes_read);
+    memcpy(buffer + (i * SECTOR_SIZE), sector_buffer, bytes_read);
 
     bytes_left -= bytes_read;
     i++;
