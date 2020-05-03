@@ -29,7 +29,7 @@ int string_compare(const_string str1, const_string str2)
 string *string_split(const_string str, const_string delimiter)
 {
   size_t length = string_length(str);
-  string *parts = kmalloc(length + 5);
+  string *parts = kmalloc(length);
   string substr;
   int count = 0;
 
@@ -46,7 +46,11 @@ string *string_split(const_string str, const_string delimiter)
       pos = length;
     }
 
-    parts[count++] = string_substring(str, i, pos);
+    // TODO: This is a hacky solution for getting rid of empty entries
+    if (pos != (int)i)
+    {
+      parts[count++] = string_substring(str, i, pos);
+    }
 
     i += pos;
   }

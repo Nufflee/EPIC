@@ -31,6 +31,43 @@ fs_entry *epicfs_parse(u8 *buffer)
   return root_entry;
 }
 
+u8 *epicfs_read_file(char *path, fs_entry *root)
+{
+  string *parts = string_split(path, "/");
+  string part;
+  fs_entry entry = *root;
+  int j = 0;
+
+  while ((part = parts[j++]) != NULL)
+  {
+    for (int i = 0; i < entry.directory->header.children_count; i++)
+    {
+      fs_entry child = entry.children[i];
+
+      if (child.type == FS_TYPE_DIRECTORY)
+      {
+        if (string_compare(child.directory->name, part) == 0)
+        {
+          entry = child;
+
+          break;
+        }
+      }
+      else if (child.type == FS_TYPE_FILE)
+      {
+        ASSERT(parts[j] == NULL);
+
+        if (string_compare(child.file->name, part) == 0)
+        {
+          return ata_read(child.file->header.start_sector, child.file->header.file_size);
+        }
+      }
+    }
+  }
+
+  ASSERT_ALWAYS("File not found!");
+}
+
 size_t epicfs_parse_file_entry(u8 *buffer, fs_entry *result)
 {
   file_entry *entry = kmalloc(sizeof(file_entry));
@@ -40,10 +77,12 @@ size_t epicfs_parse_file_entry(u8 *buffer, fs_entry *result)
   memcpy(&header, current, sizeof(file_header));
   current += sizeof(file_header);
 
-  char *name = kmalloc(header.name_length);
+  char *name = kmalloc(header.name_length + 1);
 
   memcpy(name, current, header.name_length);
   current += header.name_length;
+
+  name[header.name_length] = '\0';
 
   entry->header = header;
   entry->name = name;
@@ -64,10 +103,12 @@ size_t epicfs_parse_directory_entry(u8 *buffer, fs_entry *result)
   memcpy(&header, current, sizeof(directory_header));
   current += sizeof(directory_header);
 
-  char *name = kmalloc(header.name_length);
+  char *name = kmalloc(header.name_length + 1);
 
   memcpy(name, current, header.name_length);
   current += header.name_length;
+
+  name[header.name_length] = '\0';
 
   entry->header = header;
   entry->name = name;

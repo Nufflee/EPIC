@@ -14,7 +14,7 @@ Development is sometimes streamed on [my Twitch channel](https://www.twitch.tv/n
 - Basic interrupt-driven keyboard driver
 - Simple terminal emulator
 - ATA driver
-- Custom file system - EPICFS
+- Custom read-only file system - EPICFS
 
 ## Dependencies
 
