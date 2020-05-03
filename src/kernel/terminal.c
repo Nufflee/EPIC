@@ -2,10 +2,13 @@
 #include <string.h>
 #include <stdbool.h>
 #include <libk/assert.h>
+#include <libk/string.h>
+#include "kmalloc.h"
 #include "terminal.h"
 #include "keyboard.h"
 #include "screen.h"
 #include "serial_port.h"
+#include "shell.h"
 
 #define PROMPT "> "
 
@@ -25,6 +28,7 @@ static terminal_position terminal_index_to_position(u16);
 static void terminal_handle_deletion_key(bool);
 static char terminal_get_current_char();
 static terminal_range terminal_get_editable_range();
+static terminal_position terminal_get_current_prompt_position();
 static terminal_position new_terminal_position(u8, u8);
 static bool terminal_is_position_in_range(terminal_position, terminal_range);
 
@@ -64,12 +68,30 @@ static void on_key_press(scan_code code)
     terminal_handle_deletion_key(true);
     break;
   case ENTER_PRESSED:
+  {
+    int start = terminal_position_to_index(terminal_get_current_prompt_position());
+    int end = terminal_position_to_index(cursor_position);
+    int length = end - start;
+    string command = kmalloc(length + 1);
+
+    for (int i = start; i < end; i++)
+    {
+      memcpy(command, line_buffer + start, length);
+    }
+
+    command[length] = '\0';
+
     cursor_position.x = 0;
     cursor_position.y++;
+
+    shell_execute_command(command);
+
+    kfree(command);
 
     printf(PROMPT);
 
     break;
+  }
   default:
   {
     char c = asciify_scan_code(code);
