@@ -2,7 +2,7 @@ ARCH        := i386
 
 CC          := i686-linux-gnu-gcc-8
 AS          := i686-linux-gnu-as
-CCFLAGS     := -g -ffreestanding -Wall -Wextra -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie
+CCFLAGS     := -g -ffreestanding -Wall -Wextra -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie -MMD -MP
 LDFLAGS     := -g -ffreestanding -nostdlib -nostartfiles
 
 # Directories
@@ -17,6 +17,7 @@ OS.BIN      := $(BUILD_DIR)/os.bin
 BOOT.S      := $(SRC_DIR)/boot.s
 LINKER.LD   := $(ARCH_DIR)/linker.ld
 OBJS        := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o) $(BOOT.S:.s=.s.o))
+DEPS        := $(OBJS:.o=.d)
 
 QEMU        := qemu-system-$(ARCH)
 QEMU_FLAGS  := -kernel $(ISO_DIR)/boot/os.bin -drive file=$(ISO_DIR)/boot/drive.img,format=raw
@@ -37,7 +38,7 @@ $(BUILD_DIR)/%.s.o: %.s
 	@mkdir -p $(dir $@)
 	$(AS) $< -o $@
 
-$(BUILD_DIR)/%.c.o: %.c %.h
+$(BUILD_DIR)/%.c.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ $(CCFLAGS)
 
@@ -66,3 +67,5 @@ clean:
 	-rm -rf $(ISO_DIR)
 
 	-rm -rf os.iso
+
+-include $(DEPS)
