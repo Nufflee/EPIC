@@ -10,6 +10,11 @@
 size_t epicfs_parse_directory_entry(u8 *buffer, fs_entry *root_entry);
 size_t epicfs_parse_file_entry(u8 *buffer, fs_entry *root_entry);
 
+void epicfs_init()
+{
+  fs_root = epicfs_parse_from_ata(0);
+}
+
 // TODO: Add some sort of EPICFS magic.
 fs_entry *epicfs_parse_from_ata(size_t sector_offset)
 {
@@ -31,11 +36,11 @@ fs_entry *epicfs_parse(u8 *buffer)
   return root_entry;
 }
 
-u8 *epicfs_read_file(char *path, fs_entry *root)
+size_t epicfs_read_file(char *path, u8 *buffer)
 {
   string *parts = string_split(path, "/");
   string part;
-  fs_entry entry = *root;
+  fs_entry entry = *fs_root;
   int j = 0;
 
   while ((part = parts[j++]) != NULL)
@@ -57,9 +62,15 @@ u8 *epicfs_read_file(char *path, fs_entry *root)
       {
         ASSERT(parts[j] == NULL);
 
-        if (string_compare(child.file->name, part) == 0)
+        file_entry *file = child.file;
+
+        if (string_compare(file->name, part) == 0)
         {
-          return ata_read(child.file->header.start_sector, child.file->header.file_size);
+          size_t size = file->header.file_size;
+
+          ata_read_into(file->header.start_sector, size, buffer);
+
+          return size;
         }
       }
     }
@@ -144,6 +155,7 @@ void epicfs_pretty_print_file_entry(fs_entry entry, char *path, int indent)
 
   u32 file_size = entry.file->header.file_size;
 
+  /// TODO: Pretty print file contents.
   //char *contents = kmalloc(file_size);
 
   //memcpy(contents, buffer + entry.file->header.start_sector * 512, file_size);

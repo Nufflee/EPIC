@@ -83,6 +83,25 @@ u8 *ata_read_sector(size_t sector_offset)
   return buffer;
 }
 
+void ata_read_into(size_t sector_offset, size_t length, u8 *buffer)
+{
+  size_t bytes_left = length;
+  size_t i = 0;
+
+  while (bytes_left > 0)
+  {
+    u8 *sector_buffer = ata_read_sector(sector_offset + i);
+    size_t bytes_read = min(SECTOR_SIZE, bytes_left);
+
+    memcpy(buffer + (i * SECTOR_SIZE), sector_buffer, bytes_read);
+
+    bytes_left -= bytes_read;
+    i++;
+
+    kfree(sector_buffer);
+  }
+}
+
 u8 *ata_read(size_t sector_offset, size_t length)
 {
   u8 *buffer = kmalloc(length);

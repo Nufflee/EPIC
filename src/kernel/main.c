@@ -34,16 +34,15 @@ void kernel_main(u32 multiboot_magic, multiboot_info_t *multiboot)
   screen_init();
 
   ata_init();
+  epicfs_init();
 
   terminal_init();
 
   serial_port_printf(COM1, "Hello, world!\n");
 
-  fs_entry *root = epicfs_parse_from_ata(0);
+  epicfs_pretty_print_directory_entry(*fs_root, "", 0);
 
   epicfs_pretty_print_directory_entry(*root, "", 0);
-
-  serial_port_printf(COM1, "/file1 contents: %s\n", epicfs_read_file("/file1", root));
 
   while (1)
     ;
