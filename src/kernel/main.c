@@ -13,6 +13,7 @@
 #include "ata.h"
 #include "epicfs.h"
 #include "syscall.h"
+#include "process.h"
 
 void kernel_main(u32 multiboot_magic, multiboot_info_t *multiboot)
 {
@@ -42,7 +43,7 @@ void kernel_main(u32 multiboot_magic, multiboot_info_t *multiboot)
 
   epicfs_pretty_print_directory_entry(*fs_root, "", 0);
 
-  epicfs_pretty_print_directory_entry(*root, "", 0);
+  process_execute("/hello_world");
 
   while (1)
     ;

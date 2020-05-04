@@ -1,26 +1,28 @@
-ARCH        := i386
+ARCH         := i386
 
-CC          := i686-linux-gnu-gcc-8
-AS          := i686-linux-gnu-as
-CCFLAGS     := -g -ffreestanding -Wall -Wextra -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie -MMD -MP
-LDFLAGS     := -g -ffreestanding -nostdlib -nostartfiles
+CC           := i686-linux-gnu-gcc-8
+AS           := i686-linux-gnu-as
+CCFLAGS      := -g -ffreestanding -Wall -Wextra -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie -MMD -MP
+LDFLAGS      := -g -ffreestanding -nostdlib -nostartfiles
 
 # Directories
-BUILD_DIR   := build
-SRC_DIR     := src
-ISO_DIR     := isodir
-ARCH_DIR    := $(SRC_DIR)
+BUILD_DIR    := build
+SRC_DIR      := src
+ISO_DIR      := isodir
+ARCH_DIR     := $(SRC_DIR)
+ROOT_DIR     := root
+USERLAND_DIR := src/userland
 
-SOURCES     := $(shell find $(SRC_DIR) -type f -name "*.c")
-OS.BIN      := $(BUILD_DIR)/os.bin
+SOURCES      := $(shell find $(SRC_DIR) -type f -name "*.c")
+OS.BIN       := $(BUILD_DIR)/os.bin
 
-BOOT.S      := $(SRC_DIR)/boot.s
-LINKER.LD   := $(ARCH_DIR)/linker.ld
-OBJS        := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o) $(BOOT.S:.s=.s.o))
-DEPS        := $(OBJS:.o=.d)
+BOOT.S       := $(SRC_DIR)/boot.s
+LINKER.LD    := $(ARCH_DIR)/linker.ld
+OBJS         := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o) $(BOOT.S:.s=.s.o))
+DEPS         := $(OBJS:.o=.d)
 
-QEMU        := qemu-system-$(ARCH)
-QEMU_FLAGS  := -kernel $(ISO_DIR)/boot/os.bin -drive file=$(ISO_DIR)/boot/drive.img,format=raw
+QEMU         := qemu-system-$(ARCH)
+QEMU_FLAGS   := -kernel $(ISO_DIR)/boot/os.bin -drive file=$(ISO_DIR)/boot/drive.img,format=raw
 
 .PHONY = all build objs link run clean
 
@@ -29,7 +31,7 @@ all: $(OS.BIN)
 $(OS.BIN): build
 	grub-file --is-x86-multiboot $(OS.BIN)
 
-build: link
+build: link $(ROOT_DIR)/hello_world
 
 link: $(LINKER.LD) $(OBJS)
 	$(CC) -Wl,-T$(LINKER.LD) -o $(OS.BIN) $(LDFLAGS) $(OBJS)
@@ -41,6 +43,9 @@ $(BUILD_DIR)/%.s.o: %.s
 $(BUILD_DIR)/%.c.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ $(CCFLAGS)
+
+$(ROOT_DIR)/hello_world: $(USERLAND_DIR)/hello_world.asm
+	nasm -fbin $< -o $@
 
 setup_disk: $(OS.BIN)
 	mkdir -p $(ISO_DIR)/boot/grub
@@ -65,6 +70,7 @@ run_iso: iso
 clean:
 	-rm -rf $(BUILD_DIR)
 	-rm -rf $(ISO_DIR)
+	-rm -rf $(ROOT_DIR)/hello_world
 
 	-rm -rf os.iso
 

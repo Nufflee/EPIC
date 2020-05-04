@@ -2,6 +2,7 @@
 build
 isodir
 os.iso
+root/hello_world
 
 # To Do file
 OS.todo
