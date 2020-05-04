@@ -12,6 +12,7 @@
 #include "kmalloc.h"
 #include "ata.h"
 #include "epicfs.h"
+#include "syscall.h"
 
 void kernel_main(u32 multiboot_magic, multiboot_info_t *multiboot)
 {
@@ -27,8 +28,9 @@ void kernel_main(u32 multiboot_magic, multiboot_info_t *multiboot)
   gdt_install();
   idt_install();
 
-  keyboard_init();
+  syscall_init();
 
+  keyboard_init();
   screen_init();
 
   ata_init();

@@ -55,8 +55,9 @@ void idt_install()
   MAKE_IDT_ENTRY(29);
   MAKE_IDT_ENTRY(30);
   MAKE_IDT_ENTRY(31);
+  MAKE_IDT_ENTRY(33);
 
-  idt_set_entry(33, (u32)isr33, 0x08, 0x8E);
+  MAKE_IDT_ENTRY(128);
 
   idt_flush((u32)&ip);
 }

@@ -48,7 +48,7 @@ setup_disk: $(OS.BIN)
 	cp $(OS.BIN) $(ISO_DIR)/boot
 	cp grub.cfg $(ISO_DIR)/boot/grub
 
-	./tools/mkfs.epic.py ./root/ $(ISO_DIR)/boot/drive.img -f
+	python3 ./tools/mkfs.epic.py ./root/ $(ISO_DIR)/boot/drive.img -f
 
 run: setup_disk
 	$(QEMU) -serial stdio $(QEMU_FLAGS)

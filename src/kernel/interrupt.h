@@ -12,7 +12,8 @@ typedef struct register_info
 
 typedef enum interrupt_type
 {
-  KEYBOARD_INTERUPT = 33
+  KEYBOARD_INTERUPT = 33,
+  SYSCALL_INTERRUPT = 0x80
 } interrupt_type;
 
 typedef void (*interrupt_callback)(register_info *);

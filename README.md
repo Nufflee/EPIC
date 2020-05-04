@@ -15,6 +15,7 @@ Development is sometimes streamed on [my Twitch channel](https://www.twitch.tv/n
 - Simple terminal emulator
 - ATA driver
 - Custom read-only file system - EPICFS
+- Syscalls
 
 ## Dependencies
 
@@ -28,7 +29,7 @@ Development is sometimes streamed on [my Twitch channel](https://www.twitch.tv/n
 
 (Note: this also works perfectly on Ubuntu WSL with an X Server for QEMU)
 
-If you're using and Ubuntu / Debian based OS you can just run these commands to do all of the reuqired setup of the dependencies etc.
+If you're using and Ubuntu / Debian based OS you can just run these commands to do all of the required setup of the dependencies etc.
 
 ```sh
 sudo apt update

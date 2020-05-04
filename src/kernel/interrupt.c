@@ -15,7 +15,7 @@ void interrupt_handler(register_info *info)
 {
   interrupt_callback callback = callback_map[info->int_number];
 
-  if (callback != 0)
+  if (callback != NULL)
   {
     callback(info);
   }
