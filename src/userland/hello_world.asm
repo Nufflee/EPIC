@@ -3,6 +3,8 @@ BITS 32
 %define SYS_WRITE 4
 %define STDOUT 1
 
+org PROCESS_BASE_ADDRESS
+
 section .text
 global _start
 _start:

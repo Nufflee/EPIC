@@ -45,7 +45,7 @@ $(BUILD_DIR)/%.c.o: %.c
 	$(CC) -c $< -o $@ $(CCFLAGS)
 
 $(ROOT_DIR)/hello_world: $(USERLAND_DIR)/hello_world.asm
-	nasm -fbin $< -o $@
+	nasm -DPROCESS_BASE_ADDRESS=0x90000 -fbin $< -o $@
 
 setup_disk: $(OS.BIN)
 	mkdir -p $(ISO_DIR)/boot/grub

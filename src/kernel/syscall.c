@@ -30,8 +30,6 @@ void syscall_interrupt_handler(register_info *info)
 
 void sys$write(u32 fd, char *buffer, size_t length)
 {
-  buffer += PROCESS_BASE_ADDRESS;
-
   if (fd == 1)
   {
     for (size_t i = 0; i < length; i++)
