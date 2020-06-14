@@ -38,6 +38,8 @@ _start:
   int 0x80
 
 _start_end:
+  mov eax, 69
+
   pop ebp ; restore caller's ebp
   ret
 

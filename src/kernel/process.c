@@ -1,7 +1,7 @@
 #include "process.h"
 #include "epicfs.h"
 
-int process_execute(char *path, uint32_t argc, string *argv)
+int process_execute(char *path, u32 argc, string *argv, int *return_code)
 {
   for (int i = argc - 1; i >= 0; i--)
   {
@@ -18,6 +18,9 @@ int process_execute(char *path, uint32_t argc, string *argv)
   void (*execute)(void) = (void (*)())PROCESS_BASE_ADDRESS;
 
   execute();
+
+  asm volatile("movl %%eax, %0"
+               : "=r"(*return_code));
 
   return 0;
 }

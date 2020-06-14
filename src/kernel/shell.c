@@ -16,10 +16,14 @@ void shell_execute_command(char *command)
     argc++;
   }
 
-  if (process_execute(parts[0], argc, parts) < 0)
+  int return_code;
+
+  if (process_execute(parts[0], argc, parts, &return_code) < 0)
   {
     printf("'%s' is not recognized as an internal or external command, operable program or batch file!\n", parts[0]);
   }
+
+  printf("Program exited with code %d.\n", return_code);
 
   kfree(parts);
 
