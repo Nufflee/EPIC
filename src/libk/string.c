@@ -26,34 +26,26 @@ int string_compare(const_string str1, const_string str2)
   return *(const unsigned char *)str1 - *(const unsigned char *)str2;
 }
 
-string *string_split(const_string str, const_string delimiter)
+// TODO: This breaks when there are multiple consecutive delimiters (and probably in many other cases).
+string *string_split(const_string str, char delimiter)
 {
   size_t length = string_length(str);
-  string *parts = kmalloc(length);
-  string substr;
+  string *parts = kalloc(length, sizeof(string));
   int count = 0;
+  int last = 0;
 
-  for (size_t i = 0; i < string_length(str); i++)
+  for (size_t i = 0; i < length; i++)
   {
-    substr = string_substring_range(str, i, length);
-
-    int pos = string_find(substr, delimiter);
-    kfree(substr);
-
-    // TODO: This a hackish and buggy in some cases. (For example: ',,,,' with ',')
-    if (pos == -1)
+    if (str[i] == delimiter)
     {
-      pos = length;
-    }
+      parts[count++] = string_substring_range(str, last, i);
 
-    // TODO: This is a hacky solution for getting rid of empty entries
-    if (pos != (int)i)
-    {
-      parts[count++] = string_substring(str, i, pos);
+      last = i + 1;
     }
-
-    i += pos;
   }
+
+  // Make sure to include the last part.
+  parts[count++] = string_substring_range(str, last, length);
 
   parts[count] = NULL;
 

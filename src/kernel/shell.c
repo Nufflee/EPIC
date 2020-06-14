@@ -6,7 +6,7 @@
 
 void shell_execute_command(char *command)
 {
-  string *parts = string_split(command, " ");
+  string *parts = string_split(command, ' ');
 
   printf("'%s' command not found!\n", parts[0]);
 

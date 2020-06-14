@@ -38,7 +38,7 @@ fs_entry *epicfs_parse(u8 *buffer)
 
 size_t epicfs_read_file(char *path, u8 *buffer)
 {
-  string *parts = string_split(path, "/");
+  string *parts = string_split(path, '/');
   string part;
   fs_entry entry = *fs_root;
   int j = 0;
