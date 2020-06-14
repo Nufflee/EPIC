@@ -3,6 +3,7 @@ build
 isodir
 os.iso
 root/hello_world
+root/echo
 
 # To Do file
 OS.todo

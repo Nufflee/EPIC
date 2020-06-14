@@ -31,7 +31,7 @@ all: $(OS.BIN)
 $(OS.BIN): build
 	grub-file --is-x86-multiboot $(OS.BIN)
 
-build: link $(ROOT_DIR)/hello_world
+build: link $(ROOT_DIR)/hello_world $(ROOT_DIR)/echo
 
 link: $(LINKER.LD) $(OBJS)
 	$(CC) -Wl,-T$(LINKER.LD) -o $(OS.BIN) $(LDFLAGS) $(OBJS)
@@ -44,7 +44,7 @@ $(BUILD_DIR)/%.c.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ $(CCFLAGS)
 
-$(ROOT_DIR)/hello_world: $(USERLAND_DIR)/hello_world.asm
+$(ROOT_DIR)/%: $(USERLAND_DIR)/%.asm
 	nasm -DPROCESS_BASE_ADDRESS=0x90000 -fbin $< -o $@
 
 setup_disk: $(OS.BIN)
@@ -71,6 +71,7 @@ clean:
 	-rm -rf $(BUILD_DIR)
 	-rm -rf $(ISO_DIR)
 	-rm -rf $(ROOT_DIR)/hello_world
+	-rm -rf $(ROOT_DIR)/echo
 
 	-rm -rf os.iso
 

@@ -36,7 +36,7 @@ fs_entry *epicfs_parse(u8 *buffer)
   return root_entry;
 }
 
-size_t epicfs_read_file(char *path, u8 *buffer)
+int epicfs_read_file(char *path, u8 *buffer)
 {
   string *parts = string_split(path, '/');
   string part;
@@ -76,7 +76,7 @@ size_t epicfs_read_file(char *path, u8 *buffer)
     }
   }
 
-  ASSERT_ALWAYS("File not found!");
+  return -1;
 }
 
 size_t epicfs_parse_file_entry(u8 *buffer, fs_entry *result)

@@ -57,7 +57,7 @@ void epicfs_init();
 fs_entry *epicfs_parse_from_ata(size_t sector_offset);
 fs_entry *epicfs_parse(u8 *buffer);
 
-size_t epicfs_read_file(char *path, u8 *buffer);
+int epicfs_read_file(char *path, u8 *buffer);
 
 size_t epicfs_parse_file_entry(u8 *buffer, fs_entry *result);
 size_t epicfs_parse_directory_entry(u8 *buffer, fs_entry *result);
