@@ -16,6 +16,9 @@ USERLAND_DIR := src/userland
 SOURCES      := $(shell find $(SRC_DIR) -type f -name "*.c")
 OS.BIN       := $(BUILD_DIR)/os.bin
 
+USERLAND_ASM := $(shell find $(USERLAND_DIR) -type f -name "*.asm")
+USERLAND     := $(addprefix $(ROOT_DIR)/,$(notdir $(basename $(USERLAND_ASM))))
+
 BOOT.S       := $(SRC_DIR)/boot.s
 LINKER.LD    := $(ARCH_DIR)/linker.ld
 OBJS         := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o) $(BOOT.S:.s=.s.o))
@@ -31,7 +34,7 @@ all: $(OS.BIN)
 $(OS.BIN): build
 	grub-file --is-x86-multiboot $(OS.BIN)
 
-build: link $(ROOT_DIR)/hello_world $(ROOT_DIR)/echo
+build: link $(USERLAND)
 
 link: $(LINKER.LD) $(OBJS)
 	$(CC) -Wl,-T$(LINKER.LD) -o $(OS.BIN) $(LDFLAGS) $(OBJS)
@@ -70,8 +73,7 @@ run_iso: iso
 clean:
 	-rm -rf $(BUILD_DIR)
 	-rm -rf $(ISO_DIR)
-	-rm -rf $(ROOT_DIR)/hello_world
-	-rm -rf $(ROOT_DIR)/echo
+	-rm -rf $(USERLAND)
 
 	-rm -rf os.iso
 
