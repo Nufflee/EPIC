@@ -26,6 +26,13 @@ Development is sometimes streamed on [my Twitch channel](https://www.twitch.tv/n
 - qemu (for testing and debugging)
 - xorriso (optional, only needed for ISO creation)
 
+## Resources used
+- [OSDev Wiki](https://wiki.osdev.org/Expanded_Main_Page) - Tons of tutorials about anything OS Dev related
+- [JamesM's kernel development tutorials](http://www.jamesmolloy.co.uk/tutorial_html/) - This tutorial has [some known issues](https://wiki.osdev.org/James_Molloy%27s_Tutorial_Known_Bugs#Before_you_follow_the_tutorial).
+- [Linux x86 Syscall Reference](https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md#x86-32_bit)
+- [x86 ISA Reference](https://c9x.me/x86)
+- And others...
+
 ## Ubuntu Setup
 
 (Note: this also works perfectly on Ubuntu WSL with an X Server for QEMU)
