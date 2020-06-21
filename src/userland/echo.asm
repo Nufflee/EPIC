@@ -1,26 +1,27 @@
 BITS 32
 
+%define SYS_EXIT  1
 %define SYS_WRITE 4
+
 %define STDOUT 1
 
 org PROCESS_BASE_ADDRESS
 
 ; ebp            [ebp + 0]
-; return address [ebp + 4]
-; argc           [ebp + 8]
-; argv[i]        [ebp + (12 + i * 4)]
+; argc           [ebp + 4]
+; argv[i]        [ebp + (8 + i * 4)]
 
 section .text
 global _start
 _start:
-  push ebp ; save caller's ebp
+  push ebp
   mov ebp, esp
 
-  mov ecx, [ebp + 8] ; argc
+  mov ecx, [ebp + 4] ; argc
   cmp ecx, 1
   jbe _start_end
 
-  mov ecx, [ebp + 16] ; argv[1]
+  mov ecx, [ebp + 12] ; argv[1]
   mov edx, ecx
 
   call strlen
@@ -38,13 +39,14 @@ _start:
   int 0x80
 
 _start_end:
-  mov eax, 69
+  pop ebp
 
-  pop ebp ; restore caller's ebp
-  ret
+  mov eax, SYS_EXIT
+  mov ebx, 69
+  int 0x80
 
 ; if (*edx == NULL) return;
-
+;
 ; while(*edx != NULL) edx++;
 strlen:
   cmp BYTE [edx], 0
