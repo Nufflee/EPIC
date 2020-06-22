@@ -1,28 +1,29 @@
 # EPIC
 
-EPIC is a small kernel/OS experiment with the goal of running a precompiled 64-bit (or 32-bit) Linux ELF executable of `echo` to learn what it takes to make such an OS.
+EPIC is a small kernel/OS experiment with the goal of running a precompiled 32-bit Linux ELF executable of `echo` to learn what it takes to make such an OS.
 
-The kernel can currently only run in 32-bit protected mode on an x86 (i386) machine.
+The kernel can currently only run in 32-bit protected mode on an x86 (i386) machines.
 
-Development is sometimes streamed on [my Twitch channel](https://www.twitch.tv/nuffleee).
+Development is streamed on [my Twitch channel](https://www.twitch.tv/nuffleee).
 
 ## Features
 
 - Simple memory management (physical page allocator and malloc)
-- Serial port communication (transmission/TX)
+- Serial port output
 - VGA text mode driver
 - Basic interrupt-driven keyboard driver
 - Simple terminal emulator
-- ATA driver
+- ATA harad drive driver
 - Custom read-only file system - EPICFS
 - Syscalls
+- Binary execution (only flat binaries for now)
 
 ## Dependencies
 
 - i686 gcc8
+- nasm
 - make
 - python3 (for mkfs.epic tool that generates an EPICFS image)
-- nasm (for compiling the hello_world.asm program)
 - qemu (for testing and debugging)
 - xorriso (optional, only needed for ISO creation)
 
@@ -41,7 +42,7 @@ If you're using and Ubuntu / Debian based OS you can just run these commands to 
 
 ```sh
 sudo apt update
-sudo apt install gcc-8-i686-linux-gnu make python3 nasm qemu xorriso
+sudo apt install gcc-8-i686-linux-gnu nasm make python3 qemu xorriso
 ```
 
 ## Building

@@ -9,13 +9,13 @@ __attribute__((naked)) void common_interrupt_stub()
       "mov %ds, %ax \n"   // Set lower 16-bits of eax to ds (data segment selector)
       "push %eax \n"      // Save the ds
       "push %esp \n"      // Save the pointer to the register_info struct on the stack
-      "mov $0x10, %ax \n" // Load the kernel data segment descriptor
+      "mov $0x10, %ax \n" // Load the kernel data segment descriptor so we can access kernel memory
       "mov %ax, %ds \n"
       "mov %ax, %es \n"
       "mov %ax, %fs \n"
       "mov %ax, %gs \n"
       "call interrupt_handler \n"
-      "pop %eax \n" // Get rid of pushed pointer (0xdead)
+      "pop %eax \n" // Get rid of pushed pointer
       "pop %eax \n"
       "mov %ax, %es \n"
       "mov %ax, %ds \n"
