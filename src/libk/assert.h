@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <kernel/serial_port.h>
 
-#define ASSERT_M(condition, message)                                                           \
+#define ASSERT_MESSAGE(condition, message)                                                     \
   do                                                                                           \
   {                                                                                            \
     if (!(condition))                                                                          \
@@ -19,11 +19,11 @@
     }                                                                                          \
   } while (false)
 
-#define ASSERT(condition) ASSERT_M(condition, "Assert '" #condition "' failed!")
-#define ASSERT_ALWAYS(message) ASSERT_M(false, message)
-#define ASSERT_NOT_REACHED() ASSERT_M(false, "Assert shouldn't have been reached!")
+#define ASSERT(condition) ASSERT_MESSAGE(condition, "Assert '" #condition "' failed!")
+#define ASSERT_ALWAYS(message) ASSERT_MESSAGE(false, message)
+#define ASSERT_NOT_REACHED() ASSERT_MESSAGE(false, "Assert shouldn't have been reached!")
 #else
-#define ASSERT_M(condition, message)
+#define ASSERT_MESSAGE(condition, message)
 #define ASSERT(condition)
 #define ASSERT_ALWAYS(message)
 #define ASSERT_NOT_REACHED()

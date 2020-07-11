@@ -25,7 +25,7 @@ OBJS         := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o) $(BOOT.S:.s=.s.o))
 DEPS         := $(OBJS:.o=.d)
 
 QEMU         := qemu-system-$(ARCH)
-QEMU_FLAGS   := -kernel $(ISO_DIR)/boot/os.bin -drive file=$(ISO_DIR)/boot/drive.img,format=raw
+QEMU_FLAGS   := -kernel $(ISO_DIR)/boot/os.bin -drive file=$(ISO_DIR)/boot/drive.img,format=raw -m 256
 
 .PHONY = all build objs link run clean
 
