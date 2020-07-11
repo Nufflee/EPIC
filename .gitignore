@@ -2,8 +2,8 @@
 build
 isodir
 os.iso
-root/hello_world
-root/echo
+root/flat
+root/elf32asm
 
 # To Do file
 OS.todo

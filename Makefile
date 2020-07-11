@@ -2,10 +2,10 @@ ARCH         := i386
 
 CC           := i686-linux-gnu-gcc-8
 AS           := i686-linux-gnu-as
+LD           := i686-linux-gnu-ld
 CCFLAGS      := -g -ffreestanding -Wall -Wextra -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie -MMD -MP
 LDFLAGS      := -g -ffreestanding -nostdlib -nostartfiles
 
-# Directories
 BUILD_DIR    := build
 SRC_DIR      := src
 ISO_DIR      := isodir
@@ -17,7 +17,7 @@ SOURCES      := $(shell find $(SRC_DIR) -type f -name "*.c")
 OS.BIN       := $(BUILD_DIR)/os.bin
 
 USERLAND_ASM := $(shell find $(USERLAND_DIR) -type f -name "*.asm")
-USERLAND     := $(addprefix $(ROOT_DIR)/,$(notdir $(basename $(USERLAND_ASM))))
+USERLAND     := $(addprefix $(ROOT_DIR)/, flat elf32asm)
 
 BOOT.S       := $(SRC_DIR)/boot.s
 LINKER.LD    := $(ARCH_DIR)/linker.ld
@@ -47,8 +47,16 @@ $(BUILD_DIR)/%.c.o: %.c
 	@mkdir -p $(dir $@)
 	$(CC) -c $< -o $@ $(CCFLAGS)
 
-$(ROOT_DIR)/%: $(USERLAND_DIR)/%.asm
-	nasm -DPROCESS_BASE_ADDRESS=0x90000 -fbin $< -o $@
+$(ROOT_DIR)/flat: $(USERLAND_DIR)/hello_world.asm
+	nasm -DFLAT -DBASE_ADDRESS=0x90000 -f bin $< -o $@
+
+$(ROOT_DIR)/elf32asm: $(USERLAND_DIR)/hello_world.asm
+	$(eval OUT := $(BUILD_DIR)/$@.o)
+
+	@mkdir -p $(dir $(OUT))
+
+	nasm -f elf32 $< -o $(OUT)
+	$(LD) $(OUT) -o $@
 
 setup_disk: $(OS.BIN)
 	mkdir -p $(ISO_DIR)/boot/grub
