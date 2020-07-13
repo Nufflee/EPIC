@@ -3,7 +3,7 @@ ARCH         := i386
 CC           := i686-linux-gnu-gcc-8
 AS           := i686-linux-gnu-as
 LD           := i686-linux-gnu-ld
-CCFLAGS      := -g -ffreestanding -Wall -Wextra -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie -MMD -MP
+CCFLAGS      := -g -ffreestanding -Wall -Wextra -Isrc -Isrc/libc -lgcc -nostartfiles -fno-pie -MMD -MP -march=$(ARCH)
 LDFLAGS      := -g -ffreestanding -nostdlib -nostartfiles
 
 BUILD_DIR    := build
@@ -25,7 +25,7 @@ OBJS         := $(addprefix $(BUILD_DIR)/,$(SOURCES:.c=.c.o) $(BOOT.S:.s=.s.o))
 DEPS         := $(OBJS:.o=.d)
 
 QEMU         := qemu-system-$(ARCH)
-QEMU_FLAGS   := -kernel $(ISO_DIR)/boot/os.bin -drive file=$(ISO_DIR)/boot/drive.img,format=raw -m 256
+QEMU_FLAGS   := -kernel $(ISO_DIR)/boot/os.bin -drive file=$(ISO_DIR)/boot/drive.img,format=raw -m 256 -cpu 486
 
 .PHONY = all build objs link run clean
 
