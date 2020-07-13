@@ -28,8 +28,26 @@ void syscall_interrupt_handler(register_info *info)
   case SYSCALL_EXIT:
     sys$exit(info->ebx);
     break;
+  case SYSCALL_MODIFY_LDT:
+    // TODO: sys$set_modify_ldt is not implemnted.
+    // TODO: This syscall is supposed to return something.
+    break;
+  case SYSCALL_SET_THREAD_AREA:
+    // TODO: sys$set_thread_area is not implemnted.
+    // TODO: This syscall is supposed to return something.
+    break;
+  case SYSCALL_EXIT_GROUP:
+    // TODO: This should exit all threads but we have no concept of threads right now.
+    sys$exit(info->ebx);
+    break;
+  case SYSCALL_SET_TID_ADDRESS:
+    // TODO: sys$set_tid_address is not implemnted.
+    // TODO: This syscall is supposed to return something.
+    break;
   default:
-    ASSERT_ALWAYS("Syscall doesn't exist!");
+    // TODO: ASSERT_ALWAYS formatting
+    serial_port_printf(COM1, "Syscall number '%d' doesn't exist\n", syscall_number);
+    ASSERT_ALWAYS("");
     break;
   }
 
