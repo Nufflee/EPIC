@@ -17,7 +17,7 @@ struct iovec {
 void syscall_interrupt_handler(register_info *);
 void sys$exit(i32);
 int sys$write(u32, char *, size_t);
-int sys$writev(int fd, const struct iovec *iov, int iovcnt);
+int sys$writev(int, const struct iovec *, int);
 
 void syscall_init()
 {
@@ -90,16 +90,17 @@ int sys$write(u32 fd, char *buffer, size_t length)
     }
     return length;
   }
-  return -1; // Fail if fd != 1
+  serial_port_printf(COM1, "fd %d not implemented\n", fd);
+  ASSERT_ALWAYS("");
 }
 
 int sys$writev(int fd, const struct iovec *iov, int iovcnt) {
-  int ret = 0;
+  int total_bytes_written = 0;
   for(int i = 0; i < iovcnt; ++i) {
-    int tmp = sys$write(fd, iov[i].iov_base, iov[i].iov_len);
-    if(tmp < 0) // negative values means failure
-      return tmp;
-    ret += tmp;
+    int bytes_written = sys$write(fd, iov[i].iov_base, iov[i].iov_len);
+    if(bytes_written < 0)
+      return bytes_written;
+    total_bytes_written += bytes_written;
   }
-  return ret;
+  return total_bytes_written;
 }

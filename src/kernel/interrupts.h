@@ -9,8 +9,9 @@ __attribute__((naked)) void common_interrupt_stub()
   asm volatile(
       "pusha \n"          // Pushes edi, esi, ebp, esp, ebx, edx, ecx, eax
       "mov %%esp, %%eax \n"
-      "add $0x1c, %%eax \n"
-      "mov %%eax, (%0) \n" // save the location of where eax is on the stack
+      "add $0x1c, %%eax \n" // esp points to edi here, eax is the 7th register on the stack
+      "mov %%eax, (%0) \n"  // Save the address of where the original userspace eax is on the stack.
+                            // This allows us to overwrite it when needed, for example for syscalls that have return values.
       "mov %%ds, %%ax \n"   // Set lower 16-bits of eax to ds (data segment selector)
       "push %%eax \n"      // Save the ds
       "push %%esp \n"      // Save the pointer to the register_info struct on the stack
