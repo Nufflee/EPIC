@@ -2,29 +2,34 @@
 
 #include "interrupt.h"
 
+extern volatile u32* syscall_return;
+
 __attribute__((naked)) void common_interrupt_stub()
 {
   asm volatile(
       "pusha \n"          // Pushes edi, esi, ebp, esp, ebx, edx, ecx, eax
-      "mov %ds, %ax \n"   // Set lower 16-bits of eax to ds (data segment selector)
-      "push %eax \n"      // Save the ds
-      "push %esp \n"      // Save the pointer to the register_info struct on the stack
-      "mov $0x10, %ax \n" // Load the kernel data segment descriptor so we can access kernel memory
-      "mov %ax, %ds \n"
-      "mov %ax, %es \n"
-      "mov %ax, %fs \n"
-      "mov %ax, %gs \n"
+      "mov %%esp, %%eax \n"
+      "add $0x1c, %%eax \n"
+      "mov %%eax, (%0) \n" // save the location of where eax is on the stack
+      "mov %%ds, %%ax \n"   // Set lower 16-bits of eax to ds (data segment selector)
+      "push %%eax \n"      // Save the ds
+      "push %%esp \n"      // Save the pointer to the register_info struct on the stack
+      "mov $0x10, %%ax \n" // Load the kernel data segment descriptor so we can access kernel memory
+      "mov %%ax, %%ds \n"
+      "mov %%ax, %%es \n"
+      "mov %%ax, %%fs \n"
+      "mov %%ax, %%gs \n"
       "call interrupt_handler \n"
-      "pop %eax \n" // Get rid of pushed pointer
-      "pop %eax \n"
-      "mov %ax, %es \n"
-      "mov %ax, %ds \n"
-      "mov %ax, %fs \n"
-      "mov %ax, %gs \n"
+      "pop %%eax \n" // Get rid of pushed pointer
+      "pop %%eax \n"
+      "mov %%ax, %%es \n"
+      "mov %%ax, %%ds \n"
+      "mov %%ax, %%fs \n"
+      "mov %%ax, %%gs \n"
       "popa \n"
-      "add $8, %esp \n" // Cleans up the pushed error code and pushed IRQ number
+      "add $8, %%esp \n" // Cleans up the pushed error code and pushed IRQ number
       "iret"            // Pops 5 things at once: CS, EIP, EFLAGS, SS, and ESP
-  );
+      : "=m"(syscall_return));
 }
 
 #define ISR_NO_ERRORCODE(N)                \
