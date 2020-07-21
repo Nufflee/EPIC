@@ -15,17 +15,9 @@ Development is streamed on [my Twitch channel](https://www.twitch.tv/nuffleee).
 - Simple terminal emulator
 - ATA harad drive driver
 - Custom read-only file system - EPICFS
-- Syscalls
-- Binary execution (only flat binaries for now)
-
-## Dependencies
-
-- i686 gcc8
-- nasm
-- make
-- python3 (for mkfs.epic tool that generates an EPICFS image)
-- qemu (for testing and debugging)
-- xorriso (optional, only needed for ISO creation)
+- Linux-compatible syscalls
+- Flat and EFL32 binary execution
+- Simple C program support
 
 ## Resources used
 - [OSDev Wiki](https://wiki.osdev.org/Expanded_Main_Page) - Tons of tutorials about anything OS Dev related
@@ -34,32 +26,63 @@ Development is streamed on [my Twitch channel](https://www.twitch.tv/nuffleee).
 - [x86 ISA Reference](https://c9x.me/x86)
 - And others...
 
-## Ubuntu Setup
+## Building
 
 (Note: this also works perfectly on Ubuntu WSL with an X Server for QEMU)
 
-If you're using and Ubuntu / Debian based OS you can just run these commands to do all of the required setup of the dependencies etc.
+### Cloning
+
+You have to clone this repository recursively because there are submodules:
 
 ```sh
-sudo apt update
-sudo apt install gcc-8-i686-linux-gnu nasm make python3 qemu xorriso
+git clone --recurse-submodules https://github.com/Nufflee/epic
 ```
 
-## Building
+### Dependencies
 
-To build just the kernel you can run:
+- git
+- i686 gcc8
+- nasm
+- make
+- python3 (for mkfs.epic tool that generates an EPICFS image)
+- qemu (for testing and debugging)
+- xorriso (optional, only needed for ISO creation)
+
+```sh
+sudo apt git install gcc-8-i686-linux-gnu nasm make python3 qemu xorriso # Ubuntu/Debian
+                                                                         # Feel free to add dependency instructions for your distro/OS
+```
+
+### Building
+
+Compile [epic-musl](https://github.com/Nufflee/epic-musl):
+
+```sh
+bash ./tools/build_musl.sh
+```
+
+In case you want to rebuild epic-musl, you have to clean it up first:
+
+
+```sh
+bash ./tools/build_musl.sh clean
+```
+
+<br/>
+
+Build the kernel itself:
 
 ```sh
 make build
 ```
 
-To build the kernel and then create a full cd disk image run (xorriso is needed for this to succeed):
+Or build the kernel and then create a full .iso disk image (xorriso is needed for this to succeed):
 
 ```sh
 make iso
 ```
 
-## Running
+### Running
 
 There are a couple of different options to test run using qemu you can either build and run the kernel directly by using:
 
@@ -67,15 +90,15 @@ There are a couple of different options to test run using qemu you can either bu
 make run
 ```
 
-Alternativly you can build a full cd disk image and run qemu off of that using:
+<br/>
+
+Alternatively you can build a full cd disk image and run qemu off of that using:
 
 ```sh
 make run_iso
 ```
 
-Note: All of these options currently also complete of the build steps as well.
-
-## Debugging
+### Debugging
 
 Running the kernel in a debugger (gdb) can be done using:
 

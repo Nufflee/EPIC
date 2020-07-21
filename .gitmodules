@@ -1,0 +1,3 @@
+[submodule "epic-musl"]
+	path = toolchain/epic-musl
+	url = https://github.com/nufflee/epic-musl
