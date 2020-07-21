@@ -4,6 +4,7 @@ isodir
 os.iso
 root/flat
 root/elf32asm
+root/test
 toolchain/
 
 # To Do file

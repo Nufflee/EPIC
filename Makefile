@@ -13,11 +13,12 @@ ARCH_DIR     := $(SRC_DIR)
 ROOT_DIR     := root
 USERLAND_DIR := src/userland
 
-SOURCES      := $(shell find $(SRC_DIR) -type f -name "*.c")
+SOURCES      := $(shell find $(SRC_DIR) -path "src/userland/*" -prune -o -name '*.c' -print)
 OS.BIN       := $(BUILD_DIR)/os.bin
 
 USERLAND_ASM := $(shell find $(USERLAND_DIR) -type f -name "*.asm")
-USERLAND     := $(addprefix $(ROOT_DIR)/, flat elf32asm)
+USERLAND     := $(addprefix $(ROOT_DIR)/, flat elf32asm test)
+USERLAND_CC  := toolchain/i686-epic-musl-gcc
 
 BOOT.S       := $(SRC_DIR)/boot.s
 LINKER.LD    := $(ARCH_DIR)/linker.ld
@@ -57,6 +58,9 @@ $(ROOT_DIR)/elf32asm: $(USERLAND_DIR)/hello_world.asm
 
 	nasm -f elf32 $< -o $(OUT)
 	$(LD) $(OUT) -o $@
+
+$(ROOT_DIR)/test: $(USERLAND_DIR)/test.c
+	$(USERLAND_CC) -static $< -o $@
 
 setup_disk: $(OS.BIN)
 	mkdir -p $(ISO_DIR)/boot/grub
