@@ -22,7 +22,7 @@ Development is streamed on [my Twitch channel](https://www.twitch.tv/nuffleee).
 ## Resources used
 - [OSDev Wiki](https://wiki.osdev.org/Expanded_Main_Page) - Tons of tutorials about anything OS Dev related
 - [JamesM's kernel development tutorials](http://www.jamesmolloy.co.uk/tutorial_html/) - This tutorial has [some known issues](https://wiki.osdev.org/James_Molloy%27s_Tutorial_Known_Bugs#Before_you_follow_the_tutorial).
-- [Linux x86 Syscall Reference](https://chromium.googlesource.com/chromiumos/docs/+/master/constants/syscalls.md#x86-32_bit)
+- [Linux x86 Syscall Reference](http://shell-storm.org/shellcode/files/syscalls.html)
 - [x86 ISA Reference](https://c9x.me/x86)
 - And others...
 
@@ -49,7 +49,7 @@ git clone --recurse-submodules https://github.com/Nufflee/epic
 - xorriso (optional, only needed for ISO creation)
 
 ```sh
-sudo apt git install gcc-8-i686-linux-gnu nasm make python3 qemu xorriso # Ubuntu/Debian
+sudo apt install git gcc-8-i686-linux-gnu nasm make python3 qemu xorriso # Ubuntu/Debian
                                                                          # Feel free to add dependency instructions for your distro/OS
 ```
 
