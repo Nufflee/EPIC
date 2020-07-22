@@ -7,9 +7,17 @@
 
 //#define SYSCALL_DEBUG
 
+volatile u32* syscall_return = 0;
+
+struct iovec {
+    void  *iov_base;    /* Starting address */
+    size_t iov_len;     /* Number of bytes to transfer */
+};
+
 void syscall_interrupt_handler(register_info *);
 void sys$exit(i32);
-void sys$write(u32, char *, size_t);
+int sys$write(u32, char *, size_t);
+int sys$writev(int, const struct iovec *, int);
 
 void syscall_init()
 {
@@ -22,15 +30,22 @@ void syscall_interrupt_handler(register_info *info)
 
   switch (syscall_number)
   {
-  case SYSCALL_WRITE:
-    sys$write(info->ebx, (char *)info->ecx, info->edx);
-    break;
   case SYSCALL_EXIT:
     sys$exit(info->ebx);
+    break;
+  case SYSCALL_WRITE:
+    *syscall_return = sys$write(info->ebx, (char *)info->ecx, info->edx);
+    break;
+  case SYSCALL_IOCTL:
+    // TODO: sys$ioctl not implemented. Fake success for now.
+    *syscall_return = 0;
     break;
   case SYSCALL_MODIFY_LDT:
     // TODO: sys$set_modify_ldt is not implemnted.
     // TODO: This syscall is supposed to return something.
+    break;
+  case SYSCALL_WRITEV:
+    *syscall_return = sys$writev(info->ebx, (const struct iovec*)info->ecx, info->edx);
     break;
   case SYSCALL_SET_THREAD_AREA:
     // TODO: sys$set_thread_area is not implemnted.
@@ -65,7 +80,7 @@ void sys$exit(i32 return_code)
   asm volatile("jmp process_kernel_return");
 }
 
-void sys$write(u32 fd, char *buffer, size_t length)
+int sys$write(u32 fd, char *buffer, size_t length)
 {
   if (fd == 1)
   {
@@ -73,5 +88,19 @@ void sys$write(u32 fd, char *buffer, size_t length)
     {
       terminal_putchar(buffer[i]);
     }
+    return length;
   }
+  serial_port_printf(COM1, "fd %d not implemented\n", fd);
+  ASSERT_ALWAYS("");
+}
+
+int sys$writev(int fd, const struct iovec *iov, int iovcnt) {
+  int total_bytes_written = 0;
+  for(int i = 0; i < iovcnt; ++i) {
+    int bytes_written = sys$write(fd, iov[i].iov_base, iov[i].iov_len);
+    if(bytes_written < 0)
+      return bytes_written;
+    total_bytes_written += bytes_written;
+  }
+  return total_bytes_written;
 }
