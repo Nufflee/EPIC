@@ -6,23 +6,17 @@
 
 int main(int argc, char **argv)
 {
-  char buf[100] = {"Hello gamers!\n"};
+  printf("Hello gamers!\n");
 
-  write(1, buf, strlen(buf));
+  printf("getauxval(AT_SYSINFO_EHDR) = 0x%lx\n", getauxval(AT_SYSINFO_EHDR));
 
-  sprintf(buf, "getauxval(AT_SYSINFO_EHDR) = 0x%lx\n", getauxval(AT_SYSINFO_EHDR));
-  write(1, buf, strlen(buf));
+  printf("argc = %d\n", argc);
 
-  sprintf(buf, "argc = %d\n", argc);
-  write(1, buf, strlen(buf));
-
-  sprintf(buf, "argv[0] = %s\n", argv[0]);
-  write(1, buf, strlen(buf));
+  printf("argv[0] = %s\n", argv[0]);
 
   if (argc == 2)
   {
-    sprintf(buf, "argv[1] = %s\n", argv[1]);
-    write(1, buf, strlen(buf));
+    printf("argv[1] = %s\n", argv[1]);
   }
 
   return 69;
