@@ -11,6 +11,7 @@ typedef enum executable_type
 typedef struct executable
 {
   addr entry_point;
+  addr program_break;
   executable_type type;
 } executable;
 

@@ -5,6 +5,7 @@ os.iso
 root/flat
 root/elf32asm
 root/test
+root/bbecho
 toolchain/
 
 # To Do file

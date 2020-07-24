@@ -74,6 +74,8 @@ int elf32_load(char *path, Elf32_Ehdr *ehdr, executable *exec)
 
     // If p_memsz != p_filesz, there's a 'nobits' section which means that we have to properly expand it and zero initialize it
     memset((void *)(phdr->p_paddr + phdr->p_filesz), 0, (phdr->p_memsz - phdr->p_filesz));
+
+    exec->program_break = phdr->p_paddr + phdr->p_memsz;
   }
 
   exec->entry_point = ehdr->e_entry;

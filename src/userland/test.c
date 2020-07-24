@@ -1,7 +1,4 @@
-#include <string.h>
-#include <unistd.h>
 #include <sys/auxv.h>
-#include <stdlib.h>
 #include <stdio.h>
 
 int main(int argc, char **argv)

@@ -1,11 +1,10 @@
 #include <string.h>
 #include <libk/assert.h>
 #include "process.h"
-#include "epicfs.h"
 #include "elf.h"
+#include "epicfs.h"
 #include "serial_port.h"
 #include "kmalloc.h"
-#include "executable.h"
 
 // It's important that these are not stored on the stack
 addr original_esp;
@@ -13,13 +12,13 @@ addr original_ebp;
 
 u8 process_stack[8192] __attribute__((aligned(16)));
 
+static executable *current_exec;
+
 static inline void push_aux_vectors();
 
 int process_execute(char *path, u32 argc, string *argv, int *return_code)
 {
-  executable exec;
-
-  if (executable_load(path, &exec) < 0)
+  if (executable_load(path, current_exec) < 0)
   {
     return -1;
   }
@@ -37,7 +36,7 @@ int process_execute(char *path, u32 argc, string *argv, int *return_code)
   // Set up a new stack for the process (userspace stack)
   asm volatile("movl %0, %%esp" ::"r"(process_stack + sizeof(process_stack)));
 
-  if (exec.type == ELF32_EXECUTABLE)
+  if (current_exec->type == ELF32_EXECUTABLE)
   {
     push_aux_vectors();
   }
@@ -60,7 +59,7 @@ int process_execute(char *path, u32 argc, string *argv, int *return_code)
                "movl %%esp, %%ebp;" // Set up the 'ebp' for the process' stack
                "jmp *%%eax;"        // Jump to the binary to start execution
                :
-               : "m"(exec.entry_point));
+               : "m"(current_exec->entry_point));
 
   // Label to which sys$exit syscall jumps when program exits to return to the kernel
   asm volatile(".global process_kernel_return;"
@@ -88,6 +87,11 @@ int process_execute(char *path, u32 argc, string *argv, int *return_code)
   memset(process_stack, 0, sizeof(process_stack));
 
   return 0;
+}
+
+executable *get_current_executable()
+{
+  return current_exec;
 }
 
 // Always has to be inlined because things it pushes to the stack cannot be dismissed
