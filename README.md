@@ -1,8 +1,8 @@
 # EPIC
 
-EPIC is a small kernel/OS experiment with the goal of running a precompiled 32-bit Linux ELF executable of `echo` to learn what it takes to make such an OS.
+EPIC is a small kernel/OS experiment with the goal of running a precompiled 32-bit Linux ELF executable of `echo` to learn what it takes to do that.
 
-The kernel can currently only run in 32-bit protected mode on an x86 (i386) machines.
+The kernel can currently only run in 32-bit protected mode on x86 (i386) machines.
 
 Development is streamed on [my Twitch channel](https://www.twitch.tv/nuffleee).
 
@@ -13,10 +13,10 @@ Development is streamed on [my Twitch channel](https://www.twitch.tv/nuffleee).
 - VGA text mode driver
 - Basic interrupt-driven keyboard driver
 - Simple terminal emulator
-- ATA harad drive driver
+- ATA hard drive driver
 - Custom read-only file system - EPICFS
 - Linux-compatible syscalls
-- Flat and EFL32 binary execution
+- Flat and ELF32 binary execution
 - Simple C program support
 
 ## Resources used
